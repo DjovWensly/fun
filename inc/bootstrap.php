@@ -15,6 +15,11 @@ function gp_config(): array
             exit('config.php is missing. Copy config.sample.php to config.php and fill in your database credentials.');
         }
         $cfg = require $file;
+        if (!is_array($cfg)) {
+            http_response_code(500);
+            exit('config.php is not valid: it must start with <code>&lt;?php</code> and contain '
+                . '<code>return [ ... ];</code> around the settings. Copy config.sample.php again and only change the values.');
+        }
     }
     return $cfg;
 }
