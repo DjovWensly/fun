@@ -47,13 +47,14 @@
     var out = { truth: [], dare: [] };
     var levels = level === 'party' ? ['soft', 'party'] : ['soft'];
     ['truth', 'dare'].forEach(function (type) {
-      levels.forEach(function (lv) { out[type] = out[type].concat(prompts[lang][lv][type]); });
+      levels.forEach(function (lv) { out[type] = out[type].concat(((prompts[lang] || {})[lv] || {})[type] || []); });
     });
     return out;
   }
 
   function draw(kind) {
     var p = pool()[kind];
+    if (!p.length) return { type: kind, text: t('err_no_cards'), custom: false };
     var unused = [];
     for (var i = 0; i < p.length; i++) if (game.used[kind].indexOf(i) < 0) unused.push(i);
     if (!unused.length) { game.used[kind] = []; for (i = 0; i < p.length; i++) unused.push(i); }
@@ -110,8 +111,12 @@
       render();
     };
     if (prompts) { start(); return; }
-    fetch('data/prompts.json').then(function (r) { return r.json(); }).then(function (j) { prompts = j; start(); })
-      .catch(function () { GP.toast(t('err_network'), true); });
+    GP.api('prompts').then(function (r) {
+      if (r.ok) { prompts = r.prompts; start(); return; }
+      // Fallback to the built-in list if the server is unreachable.
+      fetch('data/prompts.json').then(function (x) { return x.json(); }).then(function (j) { prompts = j; start(); })
+        .catch(function () { GP.toast(t('err_network'), true); });
+    });
   });
 
   el('local-setup').addEventListener('click', function () {

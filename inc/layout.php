@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '1';
+const GP_ASSET_VERSION = '2';
 
 /** Display info for each game (the rules live in inc/games/*.php). */
 function gp_catalog(): array

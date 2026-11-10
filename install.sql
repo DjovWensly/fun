@@ -31,3 +31,18 @@ CREATE TABLE IF NOT EXISTS gp_players (
   UNIQUE KEY uq_room_seat (room_id, seat),
   CONSTRAINT fk_players_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Truth or Dare questions, managed from admin.php.
+-- (If this table is empty, the game uses data/prompts.json instead.)
+CREATE TABLE IF NOT EXISTS gp_prompts (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  lang        VARCHAR(5)   NOT NULL,                  -- fr | en
+  level       VARCHAR(10)  NOT NULL,                  -- soft | party
+  type        VARCHAR(10)  NOT NULL,                  -- truth | dare
+  text        VARCHAR(300) NOT NULL,
+  active      TINYINT(1)   NOT NULL DEFAULT 1,
+  created_at  DATETIME     NOT NULL,
+  updated_at  DATETIME     NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_pick (lang, level, type, active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

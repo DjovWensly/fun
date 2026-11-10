@@ -23,10 +23,7 @@ class TruthDare extends GameEngine
 
     public static function prompts(string $lang, string $level): array
     {
-        static $all = null;
-        if ($all === null) {
-            $all = json_decode((string)file_get_contents(GP_ROOT . '/data/prompts.json'), true);
-        }
+        $all = gp_prompts_load();
         $out = ['truth' => [], 'dare' => []];
         $levels = $level === 'party' ? ['soft', 'party'] : ['soft'];
         foreach (['truth', 'dare'] as $type) {
@@ -135,6 +132,9 @@ class TruthDare extends GameEngine
         $custom = $state['custom'][$kind];
         // Custom cards are indexed after the built-in ones.
         $total = count($pool) + count($custom);
+        if ($total === 0) {
+            throw new GameError('no_cards');
+        }
         $unused = array_values(array_diff(range(0, max(0, $total - 1)), $state['used'][$kind]));
         if (!$unused) {
             $state['used'][$kind] = [];

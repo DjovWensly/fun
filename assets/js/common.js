@@ -142,6 +142,7 @@
       err_cannot_pass: 'Tu ne peux pas passer.',
       err_card_too_short: 'Carte trop courte.',
       err_too_many_cards: 'Trop de cartes ajoutées.',
+      err_no_cards: 'Aucune carte dans ce paquet.',
       err_network: 'Problème de connexion.',
       err_server_error: 'Erreur du serveur, réessaie.',
       err_generic: 'Action impossible.'
@@ -280,6 +281,7 @@
       err_cannot_pass: 'You can\'t pass.',
       err_card_too_short: 'Card is too short.',
       err_too_many_cards: 'Too many cards added.',
+      err_no_cards: 'No cards in this deck.',
       err_network: 'Connection problem.',
       err_server_error: 'Server error, try again.',
       err_generic: 'You can\'t do that.'

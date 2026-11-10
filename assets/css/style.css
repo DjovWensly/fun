@@ -239,3 +239,41 @@ dialog::backdrop { background: rgba(0, 0, 0, .6); }
 .td-add { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .td-add select { width: auto; flex: 1; }
 details > summary { cursor: pointer; font-weight: 600; }
+
+/* ---------- admin ---------- */
+.flash { padding: 10px 14px; border-radius: 10px; margin: 0 0 12px; background: #14532d; }
+.flash.error { background: #7f1d1d; }
+.flash.info { background: #1e3a8a; }
+.btn.danger { color: #fca5a5; border-color: #7f1d1d; }
+.btn.danger:hover { background: #7f1d1d; color: #fff; }
+.admin-bar { margin-bottom: 12px; }
+.admin-bar form { margin: 0; }
+.admin-selects { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 10px 0; }
+.add-form textarea, .edit-form textarea { margin-bottom: 10px; }
+.filters .row input { flex: 1; }
+.check { display: inline-flex; align-items: center; gap: 6px; margin: 4px 0 10px; cursor: pointer; }
+.check input { width: auto; }
+.counts { overflow-x: auto; }
+.counts table { border-collapse: collapse; width: 100%; text-align: center; font-size: .9rem; }
+.counts th, .counts td { padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.counts th { color: var(--muted); font-weight: 600; font-size: .78rem; }
+.counts td.zero { color: var(--bad); font-weight: 700; }
+.bulk-bar { margin-bottom: 8px; }
+.bulk-bar select { width: auto; }
+.prompt-list { list-style: none; margin: 0; padding: 0; }
+.prompt-list li {
+  display: flex; gap: 10px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+}
+.prompt-list li > input { width: auto; margin-top: 4px; }
+.prompt-list li.disabled .prompt-body p { opacity: .5; text-decoration: line-through; }
+.prompt-list li.editing { border-color: var(--warn); }
+.prompt-body { flex: 1; min-width: 0; }
+.prompt-body p { margin: 4px 0 0; overflow-wrap: anywhere; }
+.prompt-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.badge.truth { background: var(--truth); color: #fff; }
+.badge.dare { background: var(--dare); color: #fff; }
+.prompt-actions { display: flex; flex-direction: column; gap: 4px; }
+.prompt-actions .btn.tiny { margin-left: 0; }
+@media (min-width: 640px) { .prompt-actions { flex-direction: row; } }
+.admin .room-title { margin-bottom: 12px; }

@@ -40,7 +40,7 @@ Bots play one move per second or so, which lets everyone see what happened.
 3. **Configure**: copy `config.sample.php` to `config.php` and fill in the values from step 1.
 4. **Upload** everything with the *Online File Manager* or FileZilla into
    `htdocs/games/` (so it lives at `https://dwens.gamer.gd/games/`). Upload: `api.php`, `index.php`,
-   `room.php`, `local.php`, `config.php`, `.htaccess`, and the folders `assets/`, `data/`, `inc/`.
+   `room.php`, `local.php`, `admin.php`, `config.php`, `.htaccess`, and the folders `assets/`, `data/`, `inc/`.
    (`install.sql`, `README.md` and `config.sample.php` don't need to be online.)
 5. **Link it from your main page**, e.g. in `htdocs/index.html` / `index.php`:
 
@@ -50,7 +50,24 @@ Bots play one move per second or so, which lets everyone see what happened.
 
    You can also link straight to a game's join box: `/games/index.php?join=K7XQM`.
 
+6. **Set an admin password** (optional): put `'admin_password' => '...'` in `config.php`, then open
+   `https://dwens.gamer.gd/games/admin.php` to manage the Truth or Dare questions.
+
 Changed CSS/JS but phones still show the old version? Increase `GP_ASSET_VERSION` in `inc/layout.php`.
+
+## Managing Truth or Dare questions (`admin.php`)
+
+Log in with the `admin_password` from `config.php` (a plain password or a `password_hash()` value). From there you can:
+
+- **Add** questions for a language (fr/en), level (soft/party) and type (truth/dare). Paste several lines to add many at once (one question per line).
+- **Edit** the text, move a question to another language/level/type, or **disable** it without deleting it.
+- **Delete** one question, or select several and disable/enable/delete them together.
+- **Filter** by language, level, type and status, or **search** the text.
+- **Export** everything as JSON (same format as `data/prompts.json`) as a backup, and **re-import** the built-in questions.
+
+Questions are stored in the `gp_prompts` table, which `admin.php` creates on its own if you haven't re-imported `install.sql`.
+Until you add your first question, the game uses `data/prompts.json`. The first time you add one, the built-in questions are
+copied into the table automatically, so you can edit or delete them as well. Changes apply to the next card drawn, even in games already running.
 
 ### Keeping within the free plan
 
@@ -72,7 +89,7 @@ separate player).
 index.php            home: pick a name, join with a code, create a room
 room.php             the room page (waiting room + game)
 local.php            Truth or Dare on a single phone (no database)
-api.php              JSON API: create, join, state (polling), start, add_bot, kick, leave, move, lobby
+api.php              JSON API: create, join, state (polling), start, add_bot, kick, leave, move, lobby, prompts
 install.sql          database tables (gp_rooms, gp_players)
 config.sample.php    copy to config.php
 inc/bootstrap.php    database connection, helpers, game registry
@@ -81,7 +98,9 @@ inc/games/*.php      game rules (server-side, authoritative)
 assets/js/common.js  translations (FR/EN), API helper, small UI helpers
 assets/js/room.js    waiting room, polling, sharing
 assets/js/games/*.js how each game is drawn in the browser
-data/prompts.json    Truth or Dare cards (fr/en × soft/party × truth/dare) — edit freely
+admin.php            password-protected page to manage Truth or Dare questions
+inc/prompts.php      loads questions from gp_prompts (or data/prompts.json while empty)
+data/prompts.json    built-in Truth or Dare cards (fr/en × soft/party × truth/dare)
 ```
 
 ## Adding a new game

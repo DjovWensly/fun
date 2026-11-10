@@ -41,6 +41,8 @@ try {
             }
             out(['ok' => true, 'games' => $list]);
             // no break (out() exits)
+        case 'prompts': // used by the one-phone mode (local.php)
+            out(['ok' => true, 'prompts' => gp_prompts_load()]);
         case 'create':
             out(actionCreate($in));
         case 'join':

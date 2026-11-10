@@ -17,6 +17,10 @@ return [
     // Link shown in the header to go back to your main site.
     'home_url' => 'https://dwens.gamer.gd/',
 
+    // Password for admin.php (manage Truth or Dare questions). Leave empty to disable the admin page.
+    // You can also paste a hash made with password_hash() instead of the plain password.
+    'admin_password' => '',
+
     // Rooms with no activity for this many hours are deleted automatically.
     'room_ttl_hours' => 24,
 ];
