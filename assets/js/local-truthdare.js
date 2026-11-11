@@ -26,7 +26,7 @@
     players.forEach(function (name, i) {
       list.appendChild(h('li', null, [
         h('span', { class: 'pname' }, name),
-        h('button', { class: 'btn tiny ghost', type: 'button', onclick: function () { players.splice(i, 1); save(); renderPlayers(); } }, '✕')
+        h('button', { class: 'btn tiny ghost', type: 'button', onclick: function () { players.splice(i, 1); save(); renderPlayers(); } }, t('kick'))
       ]));
     });
   }
@@ -81,7 +81,7 @@
     box.innerHTML = '';
     var name = players[game.turn];
     if (game.phase === 'choose') {
-      box.appendChild(h('p', { class: 'center muted' }, '📱 ' + t('pass_phone', { name: name })));
+      box.appendChild(h('p', { class: 'center label' }, t('pass_phone', { name: name })));
     }
     box.appendChild(GP.tdCard({
       phase: game.phase,

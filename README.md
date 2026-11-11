@@ -5,9 +5,9 @@ no build step) so it runs on free shared hosting like **InfinityFree**.
 
 | Game | Players | Modes |
 |---|---|---|
-| **Dominoes / Dominos** (double-six) | 2–4 | Online room · Solo vs 1–3 bots |
-| **Truth or Dare / Action ou Vérité** | 2+ | Online room (join any time, custom cards) · One phone, pass it around (no internet needed after the page loads) |
-| **Tic-Tac-Toe / Morpion** | 2 | Online room · Solo vs bot |
+| **Dominoes / Dominos** (double-six) | 2–4 | Online table or solo against 1–3 bots. Variants: **draw game** (draw from the boneyard when stuck), **block game** (no drawing, you pass), **all fives** (score when the open ends add up to a multiple of 5). Optional **2 vs 2 teams** with 4 players. Win at a number of points or of rounds won |
+| **Truth or Dare / Action ou Vérité** | 2+ | Online table (join any time, custom cards) · One phone, pass it around |
+| **Tic-Tac-Toe / Morpion** | 2 | Online or against a bot. Classic **3×3** (three in a row) or a big squared-paper grid of **10×10, 15×15, 19×19 or 25×25** (five in a row), with zoom and scrolling |
 
 The interface is in **French and English** (FR/EN switch at the top).
 

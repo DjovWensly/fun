@@ -31,11 +31,11 @@ gp_header('site_title', $code);
     <div>
       <h1 class="room-title" data-i18n="g_<?= gp_h($game) ?>"></h1>
       <button type="button" class="room-code" id="code-btn" title="Copy">
-        <span data-i18n="code"></span> <strong><?= gp_h($code) ?></strong> 📋
+        <span data-i18n="code"></span> <strong><?= gp_h($code) ?></strong>
       </button>
     </div>
     <div class="row">
-      <button type="button" class="btn small" id="share-btn" hidden>📤</button>
+      <button type="button" class="btn small" id="share-btn" data-i18n="share" hidden></button>
       <button type="button" class="btn small ghost" id="leave-btn" data-i18n="leave" hidden></button>
     </div>
   </div>
@@ -53,9 +53,9 @@ gp_header('site_title', $code);
   </section>
 
   <!-- waiting room -->
-  <section id="lobby-section" hidden>
+  <section id="lobby-section" class="lobby-grid" hidden>
     <div class="panel share-panel">
-      <p data-i18n="waiting_players"></p>
+      <p class="label" data-i18n="waiting_players"></p>
       <div class="big-code"><?= gp_h($code) ?></div>
       <div class="row wrap-row center-row">
         <button type="button" class="btn" id="copy-btn" data-i18n="copy_link"></button>
@@ -66,6 +66,7 @@ gp_header('site_title', $code);
     </div>
     <div class="panel">
       <h2 data-i18n="players"></h2>
+      <p class="mode-summary" id="mode-summary"></p>
       <ul class="player-list" id="lobby-players"></ul>
       <div class="row wrap-row" id="host-controls" hidden>
         <button type="button" class="btn" id="add-bot-btn" data-i18n="add_bot"></button>
@@ -79,7 +80,7 @@ gp_header('site_title', $code);
   <section id="game-section" hidden></section>
 
   <details class="panel host-menu" id="host-menu" hidden>
-    <summary data-i18n="players"></summary>
+    <summary data-i18n="manage_table"></summary>
     <ul class="player-list" id="game-players"></ul>
     <button type="button" class="btn small" id="back-lobby-btn" data-i18n="back_lobby"></button>
   </details>

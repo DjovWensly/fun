@@ -74,7 +74,7 @@
 
   function mutate(action, data) {
     return GP.api(action, Object.assign({ code: CODE, token: token }, data || {})).then(function (r) {
-      if (!r.ok) { GP.toast(GP.errText(r.error), true); return r; }
+      if (!r.ok) { if (!r.silent) GP.toast(GP.errText(r.error), true); return r; }
       if (r.room) apply(r);
       return r;
     });
@@ -101,7 +101,7 @@
     renderJoin(member, r);
     el('lobby-section').hidden = status !== 'lobby';
     el('game-section').hidden = status !== 'playing';
-    el('host-menu').hidden = !(status === 'playing' && member);
+    el('host-menu').hidden = !(status === 'playing' && r.isHost);
 
     if (status === 'lobby') renderLobby(r);
     if (status === 'playing') {
@@ -150,7 +150,7 @@
     if (!input.value) input.value = GP.store('gp_name') || '';
   }
 
-  function badge(text, cls) { return h('span', { class: 'badge ' + (cls || '') }, text); }
+  function badge(text, cls) { return h('span', { class: 'tag ' + (cls || '') }, text); }
 
   function renderPlayers(list, r, inGame) {
     list.innerHTML = '';
@@ -160,9 +160,10 @@
       var label = inGame && !r.room.meta.joinMidGame ? t('replace_bot') : t('kick');
       list.appendChild(h('li', { class: (p.online ? '' : 'offline ') + (inGame && turn === p.seat ? 'turn' : '') }, [
         h('span', { class: 'dot ' + (p.online ? 'on' : 'off'), title: p.online ? '' : t('offline') }),
-        h('span', { class: 'pname' }, p.bot ? '🤖 ' + p.name : p.name),
+        h('span', { class: 'pname' }, p.name),
         p.seat === r.you ? badge(t('you'), 'me') : null,
-        p.host ? badge('👑 ' + t('host')) : null,
+        p.host ? badge(t('host'), 'host') : null,
+        p.bot ? badge(t('bot'), 'bot') : null,
         !p.online ? badge(t('offline'), 'muted') : null,
         canKick ? h('button', {
           class: 'btn tiny ghost', type: 'button', text: label,
@@ -172,14 +173,31 @@
     });
   }
 
+  /** One line describing the settings chosen when the table was opened. */
+  function modeSummary(o) {
+    if (GAME === 'dominoes') {
+      return [t('mode_' + (o.mode || 'draw')), o.teams ? t('teams_on') : null,
+        o.goal === 'rounds' ? t('target_rounds', { n: o.target }) : t('target_pts', { n: o.target || 100 })]
+        .filter(Boolean).join(' · ');
+    }
+    if (GAME === 'tictactoe') {
+      var n = o.size || 3;
+      return n === 3 ? t('size_small') : t('size_big', { n: n });
+    }
+    if (GAME === 'truthdare') return [t('lvl_' + (o.level || 'soft')), t('order_' + (o.order || 'circle'))].join(' · ');
+    return '';
+  }
+
   function renderLobby(r) {
+    el('mode-summary').textContent = modeSummary(r.room.options || {});
     renderPlayers(el('lobby-players'), r, false);
     var meta = r.room.meta;
     el('host-controls').hidden = !r.isHost;
     el('add-bot-btn').hidden = !meta.bots || r.players.length >= meta.max;
-    var enough = r.players.length >= meta.min;
+    var need = GAME === 'dominoes' && r.room.options.teams ? 4 : meta.min;
+    var enough = GAME === 'dominoes' && r.room.options.teams ? r.players.length === 4 : r.players.length >= meta.min;
     el('start-btn').disabled = !enough;
-    el('lobby-hint').textContent = !enough ? t('need_players', { n: meta.min })
+    el('lobby-hint').textContent = !enough ? (need === 4 && meta.min !== 4 ? t('err_need_four') : t('need_players', { n: meta.min }))
       : (r.isHost ? '' : (r.you !== null ? t('host_will_start') : ''));
   }
 

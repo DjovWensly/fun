@@ -172,7 +172,7 @@ $failed = count(array_filter($results, function ($r) {
 <p>Checks PHP, <code>config.php</code>, the database and the game API. Your password is never shown.</p>
 
 <div class="summary <?= $failed ? 'bad' : 'good' ?>">
-  <?= $failed ? "✗ $failed problem(s) to fix — see the red lines below." : '✓ Server side looks good. Checking the game API…' ?>
+  <?= $failed ? "✗ $failed problem(s) to fix. See the red lines below." : '✓ Server side looks good. Checking the game API…' ?>
 </div>
 
 <ul>

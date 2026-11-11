@@ -16,22 +16,24 @@
         box.appendChild(h('div', { class: 'td-choices' }, [
           h('button', { class: 'btn td-truth', onclick: function () { o.onChoose('truth'); } }, t('truth')),
           h('button', { class: 'btn td-dare', onclick: function () { o.onChoose('dare'); } }, t('dare')),
-          h('button', { class: 'btn ghost', onclick: function () { o.onChoose('random'); } }, '🎲 ' + t('random'))
+          h('button', { class: 'btn', onclick: function () { o.onChoose('random'); } }, t('random'))
         ]));
       } else {
         box.appendChild(h('h2', { class: 'muted' }, t('waiting_choice', { name: o.playerName })));
       }
     } else {
+      var kind = o.card.type === 'truth' ? t('truth') : t('dare');
+      box.appendChild(h('span', { class: 'td-corner', 'aria-hidden': 'true' }, kind));
+      box.appendChild(h('span', { class: 'td-corner br', 'aria-hidden': 'true' }, kind));
       box.appendChild(h('div', { class: 'td-player' }, o.playerName));
-      box.appendChild(h('div', { class: 'td-type' }, o.card.type === 'truth' ? t('truth') : t('dare')));
       box.appendChild(h('p', { class: 'td-text' }, o.card.text));
-      if (o.card.custom) box.appendChild(h('div', { class: 'td-custom muted small' }, '✍️ ' + t('custom_card')));
+      if (o.card.custom) box.appendChild(h('div', { class: 'td-custom muted small' }, t('custom_card')));
     }
     if (o.canControl) {
       var row = h('div', { class: 'row center-row td-actions' });
       if (o.phase === 'card') {
         row.appendChild(h('button', { class: 'btn primary', onclick: o.onDone }, t('done')));
-        if (o.isTurn && !o.card.rerolled) row.appendChild(h('button', { class: 'btn', onclick: o.onReroll }, '🔄 ' + t('another')));
+        if (o.isTurn && !o.card.rerolled) row.appendChild(h('button', { class: 'btn', onclick: o.onReroll }, t('another')));
       }
       row.appendChild(h('button', { class: 'btn ghost', onclick: o.onSkip }, t('skip')));
       box.appendChild(row);
@@ -76,8 +78,10 @@
 
     root.appendChild(h('div', { class: 'truthdare' }, [
       els.card, els.last,
-      h('div', { class: 'panel' }, [h('h3', null, t('players')), els.players, els.info]),
-      h('details', { class: 'panel' }, [h('summary', null, '✍️ ' + t('add_card')), form])
+      h('div', { class: 'td-side' }, [
+        h('div', { class: 'panel' }, [h('h3', null, t('players')), els.players, els.info]),
+        h('details', { class: 'panel' }, [h('summary', null, t('add_card')), form])
+      ])
     ]));
   }
 
@@ -99,8 +103,8 @@
     }));
 
     if (g.last) {
-      els.last.textContent = t('last_turn', { name: ctx.name(g.last.seat) }) + ' — ' +
-        (g.last.skipped || !g.last.card ? t('skipped') : (g.last.card.type === 'truth' ? t('truth') : t('dare')) + ' : ' + g.last.card.text);
+      els.last.textContent = t('last_turn', { name: ctx.name(g.last.seat) }) + ', ' +
+        (g.last.skipped || !g.last.card ? t('skipped') : (g.last.card.type === 'truth' ? t('truth') : t('dare')).toLowerCase() + ' : « ' + g.last.card.text + ' »');
     } else {
       els.last.textContent = '';
     }

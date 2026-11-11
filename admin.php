@@ -222,7 +222,7 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
 }
 ?>
 <main class="wrap admin">
-  <h1 class="room-title">Truth or Dare — questions</h1>
+  <h1 class="room-title">Questions · Action ou Vérité</h1>
   <?php foreach ($flashes as [$type, $msg]): ?>
     <p class="flash <?= gp_h($type) ?>"><?= gp_h($msg) ?></p>
   <?php endforeach; ?>
@@ -291,9 +291,9 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
     $csrf = '<input type="hidden" name="csrf" value="' . gp_h(csrf()) . '">';
 ?>
   <div class="row wrap-row admin-bar">
-    <a class="btn small" href="admin.php?export=1">⬇ Export JSON</a>
+    <a class="btn small" href="admin.php?export=1">Export JSON</a>
     <form method="post"><?= $csrf ?><input type="hidden" name="action" value="import">
-      <button class="btn small" title="Adds the questions from data/prompts.json that are not in the list yet">↺ Import built-in questions</button></form>
+      <button class="btn small" title="Adds the questions from data/prompts.json that are not in the list yet">Import built-in questions</button></form>
     <form method="post"><?= $csrf ?><input type="hidden" name="action" value="logout"><button class="btn small ghost">Log out</button></form>
   </div>
 
@@ -337,7 +337,7 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
   <?php endif; ?>
 
   <details class="panel" <?= $editRow ? '' : 'open' ?>>
-    <summary>➕ Add questions</summary>
+    <summary>Add questions</summary>
     <form method="post" class="add-form">
       <?= $csrf . $filterInputs ?>
       <input type="hidden" name="action" value="add">
@@ -384,10 +384,10 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
           <input type="checkbox" name="ids[]" value="<?= (int)$r['id'] ?>" aria-label="select">
           <div class="prompt-body">
             <div class="prompt-tags">
-              <span class="badge"><?= gp_h($r['lang']) ?></span>
-              <span class="badge"><?= gp_h($r['level']) ?></span>
-              <span class="badge <?= gp_h($r['type']) ?>"><?= $r['type'] === 'truth' ? 'truth' : 'dare' ?></span>
-              <?php if (!$r['active']): ?><span class="badge muted">disabled</span><?php endif; ?>
+              <span class="tag"><?= gp_h($r['lang']) ?></span>
+              <span class="tag"><?= gp_h($r['level']) ?></span>
+              <span class="tag <?= gp_h($r['type']) ?>"><?= $r['type'] === 'truth' ? 'truth' : 'dare' ?></span>
+              <?php if (!$r['active']): ?><span class="tag muted">disabled</span><?php endif; ?>
             </div>
             <p><?= gp_h($r['text']) ?></p>
           </div>
