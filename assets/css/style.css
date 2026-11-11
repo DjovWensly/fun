@@ -229,7 +229,7 @@ dialog h2 { font-size: 1.6rem; }
 .tag.host { background: var(--gold); }
 .tag.bot { background: #dfe7f5; }
 .tag.muted { border-color: var(--hair); color: var(--ink-2); }
-.host-menu { margin-top: 18px; }
+.host-menu { margin: 18px auto 0; max-width: 440px; padding: 10px 14px; }
 .host-menu summary { cursor: pointer; font-weight: 700; }
 .host-menu .player-list { margin-top: 10px; }
 
@@ -312,11 +312,13 @@ dialog h2 { font-size: 1.6rem; }
 .hand .domino.dim { opacity: .5; }
 .hand-empty { color: #f1e3c8; text-align: center; font-size: .9rem; }
 .actions { margin: 10px 0 0; }
-.result { text-align: center; margin-top: 14px; }
-.result h2 { font-size: 1.8rem; }
-.result .points { color: var(--green); font-weight: 800; font-size: 1.2rem; margin: 0 0 6px; }
-.reveal { text-align: left; margin: 10px 0 14px; }
-.reveal-row { padding: 6px 0; border-bottom: 1.5px solid var(--hair); }
+/* round result: a compact card, not the width of the table */
+.result { text-align: center; max-width: 440px; margin: 14px auto 0; padding: 14px 16px; box-shadow: 4px 4px 0 var(--ink); }
+.result h2 { font-size: 1.35rem; }
+.result .points { color: var(--green); font-weight: 800; font-size: 1.05rem; margin: 0 0 4px; }
+.reveal { text-align: left; margin: 8px 0 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.reveal-row { padding: 5px 0; border-bottom: 1.5px solid var(--hair); font-size: .88rem; min-width: 0; }
+.reveal-row .pname { display: block; }
 .mini-hand { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 .log { list-style: none; padding: 0; margin: 12px 0 0; font-size: .85rem; text-align: center; color: var(--ink-2); }
 .log li:first-child { color: var(--ink); font-weight: 600; }
@@ -441,3 +443,61 @@ details > summary { cursor: pointer; font-weight: 700; }
 .prompt-actions .btn.tiny { margin-left: 0; }
 @media (min-width: 640px) { .prompt-actions { flex-direction: row; } }
 main > .room-title { margin-bottom: 14px; }
+
+/* ---------- reactions ---------- */
+.emote-fab {
+  position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 40;
+  width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--ink); background: var(--gold);
+  box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: transform .08s;
+}
+.emote-fab:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.emote-fab.open { background: var(--card); }
+.emote-panel {
+  position: fixed; left: 16px; bottom: calc(76px + env(safe-area-inset-bottom)); z-index: 41;
+  width: min(300px, calc(100vw - 32px)); background: var(--card); border: 2px solid var(--ink); border-radius: 12px;
+  box-shadow: 5px 5px 0 var(--ink); padding: 10px; animation: emote-panel-in .14s ease-out;
+}
+@keyframes emote-panel-in { from { transform: translateY(8px); opacity: 0; } }
+.emote-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.emote-btn {
+  font-size: 1.7rem; line-height: 1; padding: 8px 0; background: #fffdf8; border: 2px solid var(--ink);
+  border-radius: 8px; cursor: pointer;
+}
+.emote-btn:hover { background: #fff1cf; transform: scale(1.06); }
+.emote-phrases { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.emote-phrase {
+  font: 700 .85rem var(--body); padding: 8px 6px; background: var(--ink); color: var(--paper);
+  border: 2px solid var(--ink); border-radius: 8px; cursor: pointer;
+}
+.emote-phrase:hover { background: var(--red); }
+.emote-mute { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: .8rem; color: var(--ink-2); cursor: pointer; }
+.emote-mute input { width: auto; }
+
+.emote-layer { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 45; pointer-events: none; }
+.emote-bubble {
+  position: absolute; transform: translate(-50%, calc(-100% - 10px)); background: #fff; color: var(--ink);
+  border: 2px solid var(--ink); border-radius: 14px; box-shadow: 3px 3px 0 var(--ink); padding: 6px 12px;
+  white-space: nowrap; animation: emote-pop .35s cubic-bezier(.2, 1.6, .4, 1) both;
+  transition: opacity .4s, transform .4s;
+}
+.emote-bubble::after {
+  content: ""; position: absolute; left: 50%; bottom: -9px; width: 14px; height: 14px; margin-left: -7px;
+  background: #fff; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(45deg);
+}
+.emote-bubble.is-emoji .emote-content { font-size: 2.4rem; line-height: 1; display: inline-block; animation: emote-wobble .9s ease-in-out .3s 2; }
+.emote-bubble.is-text .emote-content { font: 800 1rem var(--body); }
+.emote-bubble.floating { left: 50%; position: absolute; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; }
+.emote-bubble.floating::after { display: none; }
+.emote-who { font-size: .8rem; font-weight: 700; color: var(--ink-2); }
+.emote-bubble.out { opacity: 0; transform: translate(-50%, calc(-100% - 30px)); }
+.emote-bubble.floating.out { transform: translate(-50%, -20px); }
+@keyframes emote-pop { from { transform: translate(-50%, calc(-100% - 10px)) scale(.3); opacity: 0; } }
+@keyframes emote-wobble { 25% { transform: rotate(-10deg) scale(1.1); } 75% { transform: rotate(10deg) scale(1.1); } }
+@media (prefers-reduced-motion: reduce) {
+  .emote-bubble, .emote-bubble .emote-content, .emote-panel { animation: none !important; }
+}
+/* keep the last content clear of the floating button */
+.wrap.room { padding-bottom: 96px; }
+.emote-bubble.floating { animation-name: emote-pop-float; }
+@keyframes emote-pop-float { from { transform: translateX(-50%) scale(.3); opacity: 0; } }

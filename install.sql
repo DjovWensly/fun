@@ -46,3 +46,15 @@ CREATE TABLE IF NOT EXISTS gp_prompts (
   PRIMARY KEY (id),
   KEY idx_pick (lang, level, type, active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Reactions sent during a game (kept for a minute, then cleaned up).
+CREATE TABLE IF NOT EXISTS gp_emotes (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  room_id     INT UNSIGNED NOT NULL,
+  seat        TINYINT UNSIGNED NOT NULL,
+  emote       VARCHAR(20)  NOT NULL,
+  created_at  DATETIME     NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_room (room_id, id),
+  CONSTRAINT fk_emotes_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

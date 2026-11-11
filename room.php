@@ -91,5 +91,6 @@ gp_header('site_title', $code);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <script src="assets/js/common.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <script src="assets/js/games/<?= gp_h($game) ?>.js?v=<?= GP_ASSET_VERSION ?>"></script>
+<script src="assets/js/emotes.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <script src="assets/js/room.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <?php gp_footer(); ?>

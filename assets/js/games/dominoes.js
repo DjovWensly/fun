@@ -121,7 +121,7 @@
       g.sides.forEach(function (s, i) {
         var members = h('div', { class: 'members' }, s.seats.map(function (seat) {
           var p = ctx.player(seat);
-          return h('span', { class: g.turn === seat && g.phase === 'playing' ? 'turn' : '' }, [
+          return h('span', { 'data-seat': seat, class: g.turn === seat && g.phase === 'playing' ? 'turn' : '' }, [
             ctx.name(seat) + ' ', h('span', { class: 'tiles-left', title: t('tiles_n', { n: g.counts[seat] }) }, String(g.counts[seat])),
             p && !p.online ? ' · ' + t('offline') : ''
           ]);
@@ -135,7 +135,7 @@
     }
     g.seats.forEach(function (s) {
       var p = ctx.player(s);
-      els.scores.appendChild(h('div', { class: 'score' + (g.turn === s && g.phase === 'playing' ? ' turn' : '') + (p && !p.online ? ' offline' : '') }, [
+      els.scores.appendChild(h('div', { 'data-seat': s, class: 'score' + (g.turn === s && g.phase === 'playing' ? ' turn' : '') + (p && !p.online ? ' offline' : '') }, [
         h('span', { class: 'pname' }, ctx.name(s)),
         h('span', { class: 'tiles-left', title: t('tiles_n', { n: g.counts[s] }) }, String(g.counts[s])),
         h('strong', null, main(s)),

@@ -56,7 +56,9 @@
   }
 
   function poll() {
-    GP.api('state', { code: CODE, token: token, v: version }).then(function (r) {
+    var req = { code: CODE, token: token, v: version };
+    if (GP.emotes.cursor() !== null) req.e = GP.emotes.cursor();
+    GP.api('state', req).then(function (r) {
       if (!r.ok) {
         if (r.error === 'room_not_found') { stopped = true; showClosed(t('err_room_not_found')); return; }
         failures++;
@@ -66,6 +68,7 @@
       }
       failures = 0;
       el('net-status').hidden = true;
+      GP.emotes.receive(r);
       if (r.same) updatePresence(r.presence);
       else apply(r);
       schedule();
@@ -94,6 +97,7 @@
     var member = r.you !== null;
     var status = r.room.status;
     el('leave-btn').hidden = !member;
+    GP.emotes.setVisible(member && status !== 'closed');
     el('share-btn').hidden = false;
 
     if (status === 'closed') { showClosed(t('room_closed')); stopped = true; return; }
@@ -158,7 +162,7 @@
     r.players.forEach(function (p) {
       var canKick = r.isHost && p.seat !== r.you && (!inGame || !p.bot || r.room.meta.joinMidGame);
       var label = inGame && !r.room.meta.joinMidGame ? t('replace_bot') : t('kick');
-      list.appendChild(h('li', { class: (p.online ? '' : 'offline ') + (inGame && turn === p.seat ? 'turn' : '') }, [
+      list.appendChild(h('li', { 'data-seat': p.seat, class: (p.online ? '' : 'offline ') + (inGame && turn === p.seat ? 'turn' : '') }, [
         h('span', { class: 'dot ' + (p.online ? 'on' : 'off'), title: p.online ? '' : t('offline') }),
         h('span', { class: 'pname' }, p.name),
         p.seat === r.you ? badge(t('you'), 'me') : null,
@@ -259,6 +263,12 @@
     updateWhatsApp();
     mounted = false;
     if (snap) { var s = snap; snap = null; apply(s); }
+  });
+
+  GP.emotes.init({
+    send: function (key) { return GP.api('emote', { code: CODE, token: token, emote: key }); },
+    name: function (seat) { var p = ctx.player(seat); return p ? p.name : ''; },
+    you: function () { return snap ? snap.you : null; }
   });
 
   poll();

@@ -49,7 +49,7 @@
     els.scores.innerHTML = '';
     els.scores.appendChild(h('div', { class: 'label' }, (big ? size + ' × ' + size + ' · ' : '') + t('align_n', { n: g.need || 3 })));
     g.seats.forEach(function (s) {
-      els.scores.appendChild(h('div', { class: 'score' + (!g.over && g.turn === s ? ' turn' : '') }, [
+      els.scores.appendChild(h('div', { 'data-seat': s, class: 'score' + (!g.over && g.turn === s ? ' turn' : '') }, [
         markEl(g.marks[s]),
         h('span', { class: 'pname' }, ctx.name(s)),
         h('strong', null, String(g.scores[s]))

@@ -21,6 +21,8 @@ header('Cache-Control: no-store, no-cache, must-revalidate');
 header('X-Robots-Tag: noindex');
 
 const GP_ONLINE_SECONDS = 20;   // a player not seen for this long is shown as offline
+const GP_EMOTES = ['laugh', 'wow', 'cry', 'angry', 'clap', 'fire', 'cool', 'think',
+                   'gg', 'thanks', 'oops', 'hurry', 'nice', 'again'];
 const GP_BOT_DELAY = 1;         // seconds between bot moves so humans can follow the game
 
 function out(array $data, int $code = 200): void
@@ -56,6 +58,8 @@ try {
             out(actionJoin($in));
         case 'state':
             out(actionState($in));
+        case 'emote':
+            out(actionEmote($in));
         case 'start':
         case 'add_bot':
         case 'kick':
@@ -328,10 +332,82 @@ function actionState(array $in): array
     foreach ($players as $p) {
         $presence[$p['seat']] = isOnline($p);
     }
+    $emotes = recentEmotes((int)$room['id'], isset($in['e']) ? (int)$in['e'] : -1);
     if ($since > 0 && (int)$room['version'] === $since) {
-        return ['ok' => true, 'same' => true, 'presence' => $presence];
+        return ['ok' => true, 'same' => true, 'presence' => $presence] + $emotes;
     }
-    return snapshot($room, $players, findMe($players, $token));
+    return snapshot($room, $players, findMe($players, $token)) + $emotes;
+}
+
+// --- reactions (emotes) ----------------------------------------------------------------------
+
+function ensureEmoteTable(): void
+{
+    gp_db()->exec("CREATE TABLE IF NOT EXISTS gp_emotes (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        room_id INT UNSIGNED NOT NULL,
+        seat TINYINT UNSIGNED NOT NULL,
+        emote VARCHAR(20) NOT NULL,
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (id),
+        KEY idx_room (room_id, id),
+        CONSTRAINT fk_emotes_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+}
+
+/**
+ * Reactions newer than $after. With $after = -1 (the page's first poll) nothing is replayed:
+ * the client only learns where the list currently ends.
+ */
+function recentEmotes(int $roomId, int $after): array
+{
+    try {
+        if ($after < 0) {
+            $st = gp_db()->prepare('SELECT COALESCE(MAX(id), 0) FROM gp_emotes WHERE room_id = ?');
+            $st->execute([$roomId]);
+            return ['emotes' => [], 'emoteCursor' => (int)$st->fetchColumn()];
+        }
+        $st = gp_db()->prepare('SELECT id, seat, emote FROM gp_emotes WHERE room_id = ? AND id > ? AND created_at >= ? ORDER BY id LIMIT 20');
+        $st->execute([$roomId, $after, gmdate('Y-m-d H:i:s', time() - 15)]);
+        $list = [];
+        $cursor = $after;
+        foreach ($st->fetchAll() as $r) {
+            $list[] = ['id' => (int)$r['id'], 'seat' => (int)$r['seat'], 'emote' => $r['emote']];
+            $cursor = max($cursor, (int)$r['id']);
+        }
+        return ['emotes' => $list, 'emoteCursor' => $cursor];
+    } catch (PDOException $e) {
+        return ['emotes' => [], 'emoteCursor' => $after]; // table not created yet
+    }
+}
+
+function actionEmote(array $in): array
+{
+    $emote = (string)($in['emote'] ?? '');
+    if (!in_array($emote, GP_EMOTES, true)) {
+        throw new GameError('invalid_move');
+    }
+    $room = loadRoom(cleanCode($in['code'] ?? ''), false);
+    $players = loadPlayers((int)$room['id']);
+    $me = findMe($players, (string)($in['token'] ?? ''));
+    if (!$me) {
+        throw new GameError('not_in_room');
+    }
+    ensureEmoteTable();
+    $db = gp_db();
+    // One reaction per second per player is plenty, and keeps the free hosting quota safe.
+    $st = $db->prepare('SELECT 1 FROM gp_emotes WHERE room_id = ? AND seat = ? AND created_at > ?');
+    $st->execute([$room['id'], $me['seat'], gmdate('Y-m-d H:i:s', time() - 1)]);
+    if ($st->fetchColumn()) {
+        throw new GameError('too_fast');
+    }
+    $db->prepare('INSERT INTO gp_emotes (room_id, seat, emote, created_at) VALUES (?,?,?,?)')
+        ->execute([$room['id'], $me['seat'], $emote, gp_now()]);
+    $id = (int)$db->lastInsertId();
+    if ($id % 20 === 0) {
+        $db->prepare('DELETE FROM gp_emotes WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 60)]);
+    }
+    return ['ok' => true, 'id' => $id];
 }
 
 function isOnline(array $p): bool

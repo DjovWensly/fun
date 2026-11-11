@@ -9,6 +9,10 @@ no build step) so it runs on free shared hosting like **InfinityFree**.
 | **Truth or Dare / Action ou Vérité** | 2+ | Online table (join any time, custom cards) · One phone, pass it around |
 | **Tic-Tac-Toe / Morpion** | 2 | Online or against a bot. Classic **3×3** (three in a row) or a big squared-paper grid of **10×10, 15×15, 19×19 or 25×25** (five in a row), with zoom and scrolling |
 
+During a game, the round button in the bottom corner sends a **reaction**: 8 emoji and 6 quick phrases
+(“Bien joué !”, “Oups…”, “On en refait une ?”…). It pops up as a bubble over your name on everyone's screen,
+in the player's own language. Each player can mute other people's reactions.
+
 The interface is in **French and English** (FR/EN switch at the top).
 
 ## How playing together works

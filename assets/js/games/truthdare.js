@@ -112,7 +112,7 @@
     els.players.innerHTML = '';
     g.order.forEach(function (s) {
       var st = g.stats[s] || { truth: 0, dare: 0, skip: 0 };
-      els.players.appendChild(h('li', { class: s === g.turn ? 'turn' : '' }, [
+      els.players.appendChild(h('li', { 'data-seat': s, class: s === g.turn ? 'turn' : '' }, [
         h('span', { class: 'pname' }, ctx.name(s)),
         h('span', { class: 'muted small' }, t('stats', { t: st.truth, d: st.dare, s: st.skip }))
       ]));
