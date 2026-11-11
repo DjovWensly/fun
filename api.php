@@ -21,8 +21,6 @@ header('Cache-Control: no-store, no-cache, must-revalidate');
 header('X-Robots-Tag: noindex');
 
 const GP_ONLINE_SECONDS = 20;   // a player not seen for this long is shown as offline
-const GP_EMOTES = ['laugh', 'wow', 'cry', 'angry', 'clap', 'fire', 'cool', 'think',
-                   'gg', 'thanks', 'oops', 'hurry', 'nice', 'again'];
 const GP_BOT_DELAY = 1;         // seconds between bot moves so humans can follow the game
 
 function out(array $data, int $code = 200): void
@@ -235,6 +233,9 @@ function actionCreate(array $in): array
 {
     $engine = gp_engine((string)($in['game'] ?? ''));
     $game = (string)$in['game'];
+    if (!gp_game_enabled($game)) {
+        throw new GameError('game_disabled');
+    }
     $meta = $engine->meta();
     $name = cleanName($in['name'] ?? '');
     $options = $engine->options(is_array($in['options'] ?? null) ? $in['options'] : []);
@@ -242,7 +243,7 @@ function actionCreate(array $in): array
 
     $db = gp_db();
     // Housekeeping: forget old rooms (players are deleted by the foreign key cascade).
-    $ttl = (int)(gp_config()['room_ttl_hours'] ?? 24);
+    $ttl = max(1, (int)gp_setting('room_ttl_hours'));
     $db->prepare('DELETE FROM gp_rooms WHERE updated_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - $ttl * 3600)]);
 
     $db->beginTransaction();
@@ -384,7 +385,10 @@ function recentEmotes(int $roomId, int $after): array
 function actionEmote(array $in): array
 {
     $emote = (string)($in['emote'] ?? '');
-    if (!in_array($emote, GP_EMOTES, true)) {
+    if (!gp_setting('reactions_on')) {
+        throw new GameError('reactions_off');
+    }
+    if (!in_array($emote, gp_reaction_ids(), true)) {
         throw new GameError('invalid_move');
     }
     $room = loadRoom(cleanCode($in['code'] ?? ''), false);

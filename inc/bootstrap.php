@@ -139,6 +139,7 @@ class GameError extends Exception
 }
 
 require_once __DIR__ . '/prompts.php';
+require_once __DIR__ . '/settings.php';
 require_once __DIR__ . '/games/GameEngine.php';
 require_once __DIR__ . '/games/Dominoes.php';
 require_once __DIR__ . '/games/TruthDare.php';

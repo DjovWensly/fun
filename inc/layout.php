@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '5';
+const GP_ASSET_VERSION = '7';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -57,25 +57,26 @@ function gp_logo(): string
 
 function gp_header(string $titleKey, string $extraTitle = ''): void
 {
-    $home = gp_config()['home_url'] ?? '/';
+    $home = (string)gp_setting('home_url');
     ?><!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#1c1915">
-  <title><?= $extraTitle !== '' ? gp_h($extraTitle) . ' · ' : '' ?>Soirée Jeux</title>
+  <title><?= $extraTitle !== '' ? gp_h($extraTitle) . ' · ' : '' ?><?= gp_h((gp_setting('site_title')['fr'] ?? '') ?: 'Soirée Jeux') ?></title>
   <link rel="icon" href="data:image/svg+xml,<?= rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 30"><rect x="1" y="1" width="16" height="28" rx="3" fill="#fbf7ec" stroke="#1c1915" stroke-width="2"/><line x1="4" y1="15" x2="14" y2="15" stroke="#1c1915"/><g fill="#1c1915"><circle cx="9" cy="8" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="12" cy="24" r="2"/></g></svg>') ?>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
   <link rel="stylesheet" href="assets/css/style.css?v=<?= GP_ASSET_VERSION ?>">
+  <script>window.GP_CONFIG = <?= json_encode(gp_public_config(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.php"><?= gp_logo() ?><span data-i18n="<?= gp_h($titleKey) ?>"></span></a>
   <div class="topbar-right">
-    <a class="home-link" href="<?= gp_h($home) ?>" data-i18n="back_home"></a>
+    <?php if ($home !== ''): ?><a class="home-link" href="<?= gp_h($home) ?>" data-i18n="back_home"></a><?php endif; ?>
     <div class="lang-switch">
       <button type="button" data-lang="fr">FR</button>
       <button type="button" data-lang="en">EN</button>

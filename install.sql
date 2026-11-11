@@ -58,3 +58,11 @@ CREATE TABLE IF NOT EXISTS gp_emotes (
   KEY idx_room (room_id, id),
   CONSTRAINT fk_emotes_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Site settings and custom reactions, edited from admin.php (tabs Settings and Reactions).
+CREATE TABLE IF NOT EXISTS gp_settings (
+  name        VARCHAR(50)  NOT NULL,
+  value       MEDIUMTEXT   NOT NULL,
+  updated_at  DATETIME     NOT NULL,
+  PRIMARY KEY (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

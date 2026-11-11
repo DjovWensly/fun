@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/inc/bootstrap.php';
 require __DIR__ . '/inc/layout.php';
+require __DIR__ . '/inc/admin_tabs.php';
 
 session_name('gp_admin');
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($_SERVER['HTTPS'])]);
@@ -43,7 +44,7 @@ function flash(string $msg, string $type = 'ok'): void
 /** Keep the current filters when redirecting after a POST. */
 function back(array $extra = []): void
 {
-    $keep = array_intersect_key($_POST + $_GET, array_flip(['f_lang', 'f_level', 'f_type', 'f_status', 'q']));
+    $keep = array_intersect_key($_POST + $_GET, array_flip(['f_lang', 'f_level', 'f_type', 'f_status', 'q', 'tab']));
     $qs = http_build_query(array_filter($keep + $extra, 'admin_nonempty'));
     header('Location: admin.php' . ($qs ? '?' . $qs : ''));
     exit;
@@ -104,6 +105,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$loggedIn || !hash_equals(csrf(), (string)($_POST['csrf'] ?? ''))) {
         http_response_code(403);
         exit('Session expired. <a href="admin.php">Reload</a>');
+    }
+
+    // Reactions and Settings tabs
+    $tabResult = gp_admin_tabs_post($action);
+    if ($tabResult !== null) {
+        flash($tabResult[1], $tabResult[0]);
+        back();
     }
 
     gp_prompts_ensure_table();
@@ -222,7 +230,7 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
 }
 ?>
 <main class="wrap admin">
-  <h1 class="room-title">Questions · Action ou Vérité</h1>
+  <h1 class="room-title">Admin</h1>
   <?php foreach ($flashes as [$type, $msg]): ?>
     <p class="flash <?= gp_h($type) ?>"><?= gp_h($msg) ?></p>
   <?php endforeach; ?>
@@ -242,6 +250,16 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
     <button class="btn primary">Log in</button>
   </form>
 <?php else:
+    $tab = in_array($_GET['tab'] ?? '', ['reactions', 'settings'], true) ? $_GET['tab'] : 'questions';
+    echo gp_admin_tabs_nav($tab);
+    if ($tab !== 'questions'):
+        $csrfField = '<input type="hidden" name="csrf" value="' . gp_h(csrf()) . '">';
+        if ($tab === 'reactions') {
+            gp_admin_reactions_page($csrfField);
+        } else {
+            gp_admin_settings_page($csrfField);
+        }
+    else:
     gp_prompts_ensure_table();
     $db = gp_db();
     $total = prompt_count();
@@ -415,6 +433,7 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
       document.querySelectorAll('.prompt-list input[type=checkbox]').forEach(function (c) { c.checked = e.target.checked; });
     });
   </script>
+<?php endif; // questions tab ?>
 <?php endif; ?>
 </main>
 <script src="assets/js/common.js?v=<?= GP_ASSET_VERSION ?>"></script>

@@ -4,13 +4,11 @@
   'use strict';
   var h = GP.h, t = GP.t;
 
-  var EMOJI = [
-    ['laugh', '😂'], ['wow', '😮'], ['cry', '😭'], ['angry', '😡'],
-    ['clap', '👏'], ['fire', '🔥'], ['cool', '😎'], ['think', '🤔']
-  ];
-  var PHRASES = ['gg', 'nice', 'thanks', 'oops', 'hurry', 'again'];
-  var EMOJI_MAP = {};
-  EMOJI.forEach(function (e) { EMOJI_MAP[e[0]] = e[1]; });
+  // The list comes from admin.php > Réactions (defaults in data/reactions.json).
+  var LIST = (GP.config.reactions || []).filter(function (r) { return r && r.id; });
+  var BY_ID = {};
+  LIST.forEach(function (r) { BY_ID[r.id] = r; });
+  var ENABLED = GP.config.reactionsOn !== false && LIST.length > 0;
 
   var opts = null;          // { send(key) -> Promise, name(seat), you() }
   var cursor = null;        // last reaction id seen (null until the first poll)
@@ -19,7 +17,12 @@
   var lastSent = 0;
   var els = {};
 
-  function label(key) { return EMOJI_MAP[key] || t('emote_' + key); }
+  function textOf(r) { return r[GP.lang()] || r.fr || r.en || ''; }
+  function label(key) {
+    var r = BY_ID[key];
+    if (!r) return '';
+    return r.type === 'emoji' ? r.emoji : textOf(r);
+  }
 
   function build() {
     els.button = h('button', { class: 'emote-fab', type: 'button', 'aria-label': t('reactions'), 'aria-expanded': 'false' },
@@ -61,19 +64,20 @@
     var p = els.panel;
     p.innerHTML = '';
     var grid = h('div', { class: 'emote-grid' });
-    EMOJI.forEach(function (e) {
-      grid.appendChild(h('button', { type: 'button', class: 'emote-btn', 'aria-label': t('emote_' + e[0] + '_name'), onclick: function () { send(e[0]); } }, e[1]));
-    });
     var phrases = h('div', { class: 'emote-phrases' });
-    PHRASES.forEach(function (k) {
-      phrases.appendChild(h('button', { type: 'button', class: 'emote-phrase', onclick: function () { send(k); } }, t('emote_' + k)));
+    LIST.forEach(function (r) {
+      if (r.type === 'emoji') {
+        grid.appendChild(h('button', { type: 'button', class: 'emote-btn', 'aria-label': textOf(r), title: textOf(r), onclick: function () { send(r.id); } }, r.emoji));
+      } else {
+        phrases.appendChild(h('button', { type: 'button', class: 'emote-phrase', onclick: function () { send(r.id); } }, textOf(r)));
+      }
     });
     var mute = h('label', { class: 'emote-mute' }, [
       h('input', { type: 'checkbox', checked: muted, onchange: function (e) { muted = e.target.checked; GP.store('gp_emotes_muted', muted ? '1' : '0'); } }),
       h('span', null, t('mute_reactions'))
     ]);
-    p.appendChild(grid);
-    p.appendChild(phrases);
+    if (grid.firstChild) p.appendChild(grid);
+    if (phrases.firstChild) p.appendChild(phrases);
     p.appendChild(mute);
   }
 
@@ -105,7 +109,8 @@
 
   function show(seat, key) {
     if (seat === null || seat === undefined) return;
-    var isEmoji = !!EMOJI_MAP[key];
+    if (!BY_ID[key]) return; // removed from the list since
+    var isEmoji = BY_ID[key].type === 'emoji';
     var anchor = anchorFor(seat);
     var bubble = h('div', { class: 'emote-bubble' + (isEmoji ? ' is-emoji' : ' is-text') + (anchor ? '' : ' floating') }, [
       h('span', { class: 'emote-content' }, label(key)),
@@ -148,7 +153,7 @@
   }
 
   GP.emotes = {
-    init: function (o) { opts = o; build(); setVisible(false); },
+    init: function (o) { opts = o; if (ENABLED) build(); setVisible(false); },
     cursor: function () { return cursor; },
     receive: receive,
     setVisible: setVisible

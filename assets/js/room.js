@@ -41,8 +41,9 @@
   function schedule() {
     clearTimeout(pollTimer);
     if (stopped) return;
-    var delay = 2000;
-    if (document.hidden) delay = 6000;
+    var base = GP.config.pollMs || 2000;   // set in admin.php > Réglages
+    var delay = base;
+    if (document.hidden) delay = base * 3;
     else if (snap && snap.game && isBotTurn()) delay = 1100; // keep bot moves flowing
     pollTimer = setTimeout(poll, delay);
   }

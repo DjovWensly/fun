@@ -168,6 +168,8 @@
       emote_laugh_name: 'Mort de rire', emote_wow_name: 'Surpris', emote_cry_name: 'En larmes', emote_angry_name: 'Fâché',
       emote_clap_name: 'Bravo', emote_fire_name: 'En feu', emote_cool_name: 'Tranquille', emote_think_name: 'Hmm',
       err_too_fast: 'Doucement !',
+      err_game_disabled: 'Ce jeu n\'est pas disponible pour le moment.',
+      err_reactions_off: 'Les réactions sont désactivées.',
       err_name_required: 'Écris ton nom d\'abord.',
       err_room_not_found: 'Aucune table avec ce code.',
       err_room_full: 'La table est pleine.',
@@ -350,6 +352,8 @@
       emote_laugh_name: 'Laughing', emote_wow_name: 'Surprised', emote_cry_name: 'Crying', emote_angry_name: 'Angry',
       emote_clap_name: 'Applause', emote_fire_name: 'On fire', emote_cool_name: 'Cool', emote_think_name: 'Hmm',
       err_too_fast: 'Slow down!',
+      err_game_disabled: 'This game is not available right now.',
+      err_reactions_off: 'Reactions are turned off.',
       err_name_required: 'Write your name first.',
       err_room_not_found: 'No table with that code.',
       err_room_full: 'The table is full.',
@@ -383,10 +387,15 @@
     return null;
   }
 
-  var lang = store('gp_lang') || ((navigator.language || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr');
+  // Settings chosen in admin.php (printed by the page as window.GP_CONFIG).
+  var CONFIG = window.GP_CONFIG || {};
+  var CUSTOM = CONFIG.texts || {};
+  var defaultLang = CONFIG.lang === 'fr' || CONFIG.lang === 'en' ? CONFIG.lang
+    : ((navigator.language || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr');
+  var lang = store('gp_lang') || defaultLang;
 
   function t(key, vars) {
-    var s = (DICT[lang] && DICT[lang][key]) || DICT.fr[key] || key;
+    var s = (CUSTOM[lang] && CUSTOM[lang][key]) || (DICT[lang] && DICT[lang][key]) || DICT.fr[key] || key;
     if (vars) {
       Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); });
     }
@@ -506,6 +515,7 @@
   document.addEventListener('DOMContentLoaded', function () { applyI18n(); langSwitch(); });
 
   window.GP = {
+    config: CONFIG,
     t: t, api: api, store: store, toast: toast, h: h, errText: errText, applyI18n: applyI18n,
     lang: function () { return lang; },
     games: {} // game UIs register themselves here

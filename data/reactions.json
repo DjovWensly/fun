@@ -1,0 +1,19 @@
+{
+  "_comment": "Default reactions. Edit them from admin.php (tab Réactions); this file is only used until you save changes there. type 'emoji' shows the emoji (fr/en are the names read by screen readers); type 'text' shows the fr or en text in each player's language.",
+  "reactions": [
+    { "id": "laugh",  "type": "emoji", "emoji": "😂", "fr": "Mort de rire", "en": "Laughing" },
+    { "id": "wow",    "type": "emoji", "emoji": "😮", "fr": "Surpris",      "en": "Surprised" },
+    { "id": "cry",    "type": "emoji", "emoji": "😭", "fr": "En larmes",    "en": "Crying" },
+    { "id": "angry",  "type": "emoji", "emoji": "😡", "fr": "Fâché",        "en": "Angry" },
+    { "id": "clap",   "type": "emoji", "emoji": "👏", "fr": "Bravo",        "en": "Applause" },
+    { "id": "fire",   "type": "emoji", "emoji": "🔥", "fr": "En feu",       "en": "On fire" },
+    { "id": "cool",   "type": "emoji", "emoji": "😎", "fr": "Tranquille",   "en": "Cool" },
+    { "id": "think",  "type": "emoji", "emoji": "🤔", "fr": "Hmm",          "en": "Hmm" },
+    { "id": "gg",     "type": "text", "fr": "Bien joué !",        "en": "Good game!" },
+    { "id": "nice",   "type": "text", "fr": "Joli coup !",        "en": "Nice move!" },
+    { "id": "thanks", "type": "text", "fr": "Merci !",            "en": "Thanks!" },
+    { "id": "oops",   "type": "text", "fr": "Oups…",              "en": "Oops…" },
+    { "id": "hurry",  "type": "text", "fr": "Allez, joue !",      "en": "Come on, play!" },
+    { "id": "again",  "type": "text", "fr": "On en refait une ?", "en": "One more?" }
+  ]
+}

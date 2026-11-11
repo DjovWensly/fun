@@ -60,6 +60,20 @@ Bots play one move per second or so, which lets everyone see what happened.
 
 Changed CSS/JS but phones still show the old version? Increase `GP_ASSET_VERSION` in `inc/layout.php`.
 
+## Admin page (`admin.php`)
+
+Three tabs, behind the `admin_password` from `config.php`:
+
+- **Questions**: the Truth or Dare cards (see below).
+- **Reactions**: the emoji and phrases players can send during a game. Add, edit, reorder or remove them
+  (up to 16), with a French and an English text for each phrase. Defaults live in `data/reactions.json`,
+  and "Reset to the defaults" brings them back. Reactions can also be switched off.
+- **Settings**: site name, home page title and sentence (FR and EN, empty = built-in text), language for
+  new visitors, which games appear on the home page, the link back to your main site, how often screens
+  refresh (to save InfinityFree's daily quota) and how long idle tables are kept.
+
+Settings are stored in the `gp_settings` table, created automatically on the first save.
+
 ## Managing Truth or Dare questions (`admin.php`)
 
 Log in with the `admin_password` from `config.php` (a plain password or a `password_hash()` value). From there you can:
@@ -135,6 +149,9 @@ assets/js/games/*.js how each game is drawn in the browser
 admin.php            password-protected page to manage Truth or Dare questions
 inc/prompts.php      loads questions from gp_prompts (or data/prompts.json while empty)
 data/prompts.json    built-in Truth or Dare cards (fr/en × soft/party × truth/dare)
+data/reactions.json  built-in reactions (emoji + phrases)
+inc/settings.php     site settings (gp_settings table) with defaults
+inc/admin_tabs.php   admin tabs Reactions and Settings
 ```
 
 ## Adding a new game
