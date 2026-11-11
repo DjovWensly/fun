@@ -214,7 +214,14 @@ function gp_admin_settings_page(string $csrf): void
         }
         return $h . '</select>';
     };
-    $names = ['dominoes' => 'Dominoes / Dominos', 'truthdare' => 'Truth or Dare / Action ou Vérité', 'tictactoe' => 'Tic-Tac-Toe / Morpion'];
+    $names = [
+        'dominoes'    => 'Dominoes / Dominos',
+        'truthdare'   => 'Truth or Dare / Action ou Vérité',
+        'tictactoe'   => 'Tic-Tac-Toe / Morpion',
+        'whoofus'     => 'Which of us? / Qui de nous deux ?',
+        'wouldrather' => 'Would you rather? / Tu préfères… ?',
+        'drawguess'   => 'Draw & guess / Dessine et devine',
+    ];
     ?>
   <form method="post" class="settings-form">
     <?= $csrf ?>

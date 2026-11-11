@@ -365,6 +365,9 @@ function select_html(string $name, array $opts, string $value, bool $withAll = f
         <?= select_html('type', GP_PROMPT_TYPES, $f['type'] ?: 'truth') ?>
       </div>
       <textarea name="text" rows="4" required placeholder="One question per line. Paste a whole list to add many at once."></textarea>
+      <p class="muted small">Formats: <strong>Qui de nous</strong> is the end of the question, e.g. <em>cuisine le mieux ?</em>
+        (the game adds "Qui de nous deux"). <strong>Tu préfères</strong> is two choices separated by <code>||</code>,
+        e.g. <em>La mer || La montagne</em>. <strong>Mot à dessiner</strong> is one word or short expression.</p>
       <div class="row end"><button class="btn primary">Add</button></div>
     </form>
   </details>

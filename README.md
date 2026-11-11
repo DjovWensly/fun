@@ -8,6 +8,9 @@ no build step) so it runs on free shared hosting like **InfinityFree**.
 | **Dominoes / Dominos** (double-six) | 2–4 | Online table or solo against 1–3 bots. Variants: **draw game** (draw from the boneyard when stuck), **block game** (no drawing, you pass), **all fives** (score when the open ends add up to a multiple of 5). Optional **2 vs 2 teams** with 4 players. Win at a number of points or of rounds won |
 | **Truth or Dare / Action ou Vérité** | 2+ | Online table (join any time, custom cards) · One phone, pass it around |
 | **Tic-Tac-Toe / Morpion** | 2 | Online or against a bot. Classic **3×3** (three in a row) or a big squared-paper grid of **10×10, 15×15, 19×19 or 25×25** (five in a row), with zoom and scrolling |
+| **Qui de nous deux ? / Which of us?** | 2+ | A question appears (“…cuisine le mieux ?”), everyone secretly picks a player, then the answers are revealed. Two players get a *complicité* score; in a group the most-picked player scores |
+| **Tu préfères… ? / Would you rather…?** | 2+ | Two choices, everyone votes in secret, then you see who picked what and how often the table agrees |
+| **Dessine et devine / Draw & guess** | 2–10 | Each player draws a word (picked from 3) while the others type guesses. Timer, letter hints at half and three-quarter time, points for speed, “so close!” hints, players can join mid-game |
 
 During a game, the round button in the bottom corner sends a **reaction**: 8 emoji and 6 quick phrases
 (“Bien joué !”, “Oups…”, “On en refait une ?”…). It pops up as a bubble over your name on everyone's screen,
@@ -84,11 +87,20 @@ Log in with the `admin_password` from `config.php` (a plain password or a `passw
 - **Filter** by language, level, type and status, or **search** the text.
 - **Export** everything as JSON (same format as `data/prompts.json`) as a backup, and **re-import** the built-in questions.
 
+The Questions tab also holds the cards of *Qui de nous deux* (type **who**: the end of the question,
+e.g. “cuisine le mieux ?”), *Tu préfères* (type **wyr**: two choices separated by `||`) and the words of
+*Dessine et devine* (type **word**).
+
 Questions are stored in the `gp_prompts` table, which `admin.php` creates on its own if you haven't re-imported `install.sql`.
 Until you add your first question, the game uses `data/prompts.json`. The first time you add one, the built-in questions are
 copied into the table automatically, so you can edit or delete them as well. Changes apply to the next card drawn, even in games already running.
 
 ### Keeping within the free plan
+
+*Dessine et devine* refreshes twice as often while a game is running so the drawing appears quickly,
+and the drawer sends strokes about twice a second while drawing: count roughly 3,600 requests per
+player per hour for that game.
+
 
 InfinityFree counts every request ("hits", ~50,000/day). One player polling for an hour is about
 1,800 hits, so a 4-player hour of dominoes is roughly 7,000. That's plenty for friends; if you ever get
@@ -148,7 +160,7 @@ assets/js/room.js    waiting room, polling, sharing
 assets/js/games/*.js how each game is drawn in the browser
 admin.php            password-protected page to manage Truth or Dare questions
 inc/prompts.php      loads questions from gp_prompts (or data/prompts.json while empty)
-data/prompts.json    built-in Truth or Dare cards (fr/en × soft/party × truth/dare)
+data/prompts.json    built-in cards (fr/en × soft/party): truth, dare, who, wyr ("A || B"), word
 data/reactions.json  built-in reactions (emoji + phrases)
 inc/settings.php     site settings (gp_settings table) with defaults
 inc/admin_tabs.php   admin tabs Reactions and Settings

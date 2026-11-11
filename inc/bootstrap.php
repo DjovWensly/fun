@@ -144,6 +144,10 @@ require_once __DIR__ . '/games/GameEngine.php';
 require_once __DIR__ . '/games/Dominoes.php';
 require_once __DIR__ . '/games/TruthDare.php';
 require_once __DIR__ . '/games/TicTacToe.php';
+require_once __DIR__ . '/games/PollGame.php';
+require_once __DIR__ . '/games/WhoOfUs.php';
+require_once __DIR__ . '/games/WouldRather.php';
+require_once __DIR__ . '/games/DrawGuess.php';
 
 /** Registry of available games. To add a game: write an engine + a JS file, then register it here. */
 function gp_games(): array
@@ -152,6 +156,9 @@ function gp_games(): array
         'dominoes'  => new Dominoes(),
         'truthdare' => new TruthDare(),
         'tictactoe' => new TicTacToe(),
+        'whoofus'   => new WhoOfUs(),
+        'wouldrather' => new WouldRather(),
+        'drawguess' => new DrawGuess(),
     ];
 }
 

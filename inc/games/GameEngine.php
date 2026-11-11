@@ -37,6 +37,21 @@ abstract class GameEngine
     {
     }
 
+    /**
+     * Games with a clock (Dessine et devine) move on by themselves when time runs out.
+     * tickDue() is a cheap check run on every poll; tick() then runs with the room locked
+     * and returns true if it changed the state.
+     */
+    public function tickDue(array $state): bool
+    {
+        return false;
+    }
+
+    public function tick(array &$state): bool
+    {
+        return false;
+    }
+
     /** A player joined while the game is running (only if meta()['joinMidGame']). */
     public function addSeat(array &$state, int $seat): void
     {

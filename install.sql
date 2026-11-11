@@ -66,3 +66,15 @@ CREATE TABLE IF NOT EXISTS gp_settings (
   updated_at  DATETIME     NOT NULL,
   PRIMARY KEY (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Drawings for "Dessine et devine" (one row per batch of strokes; old turns are cleaned up).
+CREATE TABLE IF NOT EXISTS gp_strokes (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  room_id     INT UNSIGNED NOT NULL,
+  turn        INT UNSIGNED NOT NULL,
+  data        MEDIUMTEXT   NOT NULL,
+  created_at  DATETIME     NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_room_turn (room_id, turn, id),
+  CONSTRAINT fk_strokes_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

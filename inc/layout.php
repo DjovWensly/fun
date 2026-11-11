@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '7';
+const GP_ASSET_VERSION = '9';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -42,6 +42,30 @@ function gp_catalog(): array
                 . '<g stroke="#1f4592" stroke-width="5"><path d="M18 18l14 14M32 18l-14 14"/><path d="M42 42l14 14M56 42l-14 14"/><path d="M66 66l10 10M76 66l-10 10"/></g>'
                 . '<g fill="none" stroke="#c4381d" stroke-width="5"><circle cx="49" cy="25" r="8"/><circle cx="25" cy="61" r="8"/></g>'
                 . '<path d="M12 12L80 80" stroke="#e3a21a" stroke-width="3" opacity=".8"/></svg>',
+        ],
+        'whoofus' => [
+            'art_class' => 'art-pink',
+            'scripts' => ['assets/js/games/poll-common.js'],
+            'art' => '<svg viewBox="0 0 90 90" width="86" height="86" aria-hidden="true" font-family="Archivo, Arial, sans-serif" font-weight="900">'
+                . '<g stroke="#14110d" stroke-width="2"><circle cx="30" cy="34" r="11" fill="#fbf7ec"/><path d="M12 72c2-14 10-21 18-21s16 7 18 21z" fill="#1f4592"/>'
+                . '<circle cx="60" cy="34" r="11" fill="#fbf7ec"/><path d="M42 72c2-14 10-21 18-21s16 7 18 21z" fill="#c4381d"/></g>'
+                . '<text x="45" y="20" text-anchor="middle" font-size="22" fill="#14110d">?</text></svg>',
+        ],
+        'wouldrather' => [
+            'art_class' => 'art-split',
+            'scripts' => ['assets/js/games/poll-common.js'],
+            'art' => '<svg viewBox="0 0 90 90" width="86" height="86" aria-hidden="true" font-family="Archivo, Arial, sans-serif" font-weight="900">'
+                . '<rect x="8" y="18" width="34" height="54" rx="5" fill="#1f4592" stroke="#14110d" stroke-width="2"/>'
+                . '<rect x="48" y="18" width="34" height="54" rx="5" fill="#c4381d" stroke="#14110d" stroke-width="2"/>'
+                . '<text x="25" y="53" text-anchor="middle" font-size="22" fill="#fff">A</text><text x="65" y="53" text-anchor="middle" font-size="22" fill="#fff">B</text></svg>',
+        ],
+        'drawguess' => [
+            'art_class' => 'art-paper',
+            'art' => '<svg viewBox="0 0 90 90" width="86" height="86" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">'
+                . '<path d="M14 62c8-20 16-30 24-18s14 6 20-8" fill="none" stroke="#c4381d" stroke-width="4"/>'
+                . '<path d="M16 30c6-6 12-6 16 0" fill="none" stroke="#1f4592" stroke-width="3"/>'
+                . '<g transform="rotate(40 62 46)"><rect x="56" y="14" width="12" height="52" rx="2" fill="#e3a21a" stroke="#14110d" stroke-width="2"/>'
+                . '<path d="M56 66l6 12 6-12z" fill="#fbf7ec" stroke="#14110d" stroke-width="2"/><path d="M60 74l2 4 2-4z" fill="#14110d"/></g></svg>',
         ],
     ];
 }

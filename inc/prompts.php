@@ -2,14 +2,21 @@
 declare(strict_types=1);
 
 /**
- * Truth or Dare questions.
- * They live in the gp_prompts table (edited from admin.php). While that table is empty or missing,
- * the built-in list in data/prompts.json is used, so the game works right after installation.
+ * Cards for the party games: Truth or Dare (truth/dare), Qui de nous deux (who), Tu préfères (wyr,
+ * "choice A || choice B") and Dessine et devine (word).
+ * They live in the gp_prompts table (edited from admin.php). For any type that has no rows in the
+ * table yet, the built-in list in data/prompts.json is used, so every game works right after installation.
  */
 
 const GP_PROMPT_LANGS = ['fr' => 'Français', 'en' => 'English'];
 const GP_PROMPT_LEVELS = ['soft' => 'Tranquille / Chill', 'party' => 'Soirée / Party'];
-const GP_PROMPT_TYPES = ['truth' => 'Vérité / Truth', 'dare' => 'Action / Dare'];
+const GP_PROMPT_TYPES = [
+    'truth' => 'Vérité / Truth',
+    'dare'  => 'Action / Dare',
+    'who'   => 'Qui de nous / Which of us',
+    'wyr'   => 'Tu préfères / Would you rather',
+    'word'  => 'Mot à dessiner / Word to draw',
+];
 
 function gp_prompts_ensure_table(): void
 {
@@ -48,18 +55,36 @@ function gp_prompts_load(): array
     } catch (PDOException $e) {
         $total = 0; // table not created yet
     }
+    $defaults = gp_prompts_defaults();
     if ($total === 0) {
-        return $cache = gp_prompts_defaults();
+        return $cache = $defaults;
     }
     $out = [];
     foreach (GP_PROMPT_LANGS as $l => $_) {
         foreach (GP_PROMPT_LEVELS as $lv => $_2) {
-            $out[$l][$lv] = ['truth' => [], 'dare' => []];
+            $out[$l][$lv] = array_fill_keys(array_keys(GP_PROMPT_TYPES), []);
         }
+    }
+    $typesInDb = [];
+    try {
+        foreach (gp_db()->query('SELECT DISTINCT type FROM gp_prompts') as $t) {
+            $typesInDb[$t['type']] = true;
+        }
+    } catch (PDOException $e) {
     }
     foreach ($rows as $r) {
         if (isset($out[$r['lang']][$r['level']][$r['type']])) {
             $out[$r['lang']][$r['level']][$r['type']][] = $r['text'];
+        }
+    }
+    // Types never edited in the admin (e.g. a game added later) keep their built-in cards.
+    foreach (array_keys(GP_PROMPT_TYPES) as $type) {
+        if (empty($typesInDb[$type])) {
+            foreach ($out as $l => $levels) {
+                foreach ($levels as $lv => $_) {
+                    $out[$l][$lv][$type] = $defaults[$l][$lv][$type] ?? [];
+                }
+            }
         }
     }
     return $cache = $out;

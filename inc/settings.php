@@ -17,7 +17,7 @@ function gp_settings_defaults(): array
         'hero_title'     => ['fr' => '', 'en' => ''],
         'tagline'        => ['fr' => '', 'en' => ''],
         'default_lang'   => 'auto',                      // auto (from the browser) | fr | en
-        'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true],
+        'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true, 'whoofus' => true, 'wouldrather' => true, 'drawguess' => true],
         'home_url'       => (string)($cfg['home_url'] ?? ''),
         'home_label'     => '',
         'poll_ms'        => 2000,

@@ -155,6 +155,9 @@ input::placeholder, textarea::placeholder { color: #a39985; }
 }
 .game-art.art-felt { background: var(--felt); }
 .game-art.art-cards { background: #f6d9c9; }
+.game-art.art-pink { background: #f3dfe6; }
+.game-art.art-split { background: #efe3c8; }
+.game-art.art-paper { background: #fff; }
 .game-art.art-grid {
   background-color: #fff;
   background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
@@ -528,3 +531,110 @@ main > .room-title { margin-bottom: 14px; }
 fieldset.pair { border: 0; padding: 0; margin: 0 0 8px; display: grid; gap: 0 10px; grid-template-columns: 1fr; }
 fieldset.pair legend { font-weight: 700; margin-bottom: 4px; padding: 0; }
 @media (min-width: 640px) { fieldset.pair { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- voting games: Qui de nous deux, Tu préfères ---------- */
+.poll-game { max-width: 640px; margin: 0 auto; }
+.poll-card {
+  position: relative; background: var(--card); border: 2px solid var(--ink); border-radius: 14px;
+  box-shadow: 6px 6px 0 var(--ink); padding: 26px 18px 20px; margin: 8px 0 14px; text-align: center;
+}
+.poll-card.who-card { background: #fbeef2; }
+.poll-card.wyr-card { background: #fbf4e4; }
+.poll-question { font-family: var(--display); font-stretch: 85%; font-weight: 800; font-size: clamp(1.45rem, 6vw, 2.1rem); line-height: 1.15; margin: 0 0 18px; }
+.poll-question.small-q { font-size: 1.1rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); margin-bottom: 12px; }
+.q-prefix { color: var(--red); }
+.who-choices { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+.who-choices .label { grid-column: 1 / -1; margin: 0; }
+.who-choices.many { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.who-btn { font-size: 1.15rem; padding: 16px 10px; white-space: normal; }
+.who-btn.chosen, .wyr-opt.chosen { background: var(--ink); color: var(--paper); }
+.wyr-choices { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: stretch; }
+@media (min-width: 560px) { .wyr-choices { grid-template-columns: 1fr auto 1fr; } }
+.wyr-opt {
+  font: 800 1.15rem/1.25 var(--body); padding: 22px 14px; border: 2px solid var(--ink); border-radius: 10px;
+  box-shadow: var(--shadow); cursor: pointer; color: #fff; min-height: 96px;
+}
+.wyr-opt.opt-a { background: var(--blue); }
+.wyr-opt.opt-b { background: var(--red); }
+.wyr-opt.chosen { outline: 4px solid var(--gold); outline-offset: 2px; }
+.wyr-opt:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.wyr-or { align-self: center; font-family: var(--display); font-stretch: 70%; font-weight: 900; font-size: 1.2rem; text-transform: uppercase; }
+.poll-status { text-align: center; min-height: 1.5em; }
+.poll-status p { margin: 4px 0; }
+.poll-status .saved { font-weight: 700; color: var(--green); }
+.vote-dots { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 6px; }
+.vote-dot { font-size: .8rem; font-weight: 600; padding: 2px 8px; border: 1.5px dashed var(--ink-2); border-radius: 999px; color: var(--ink-2); }
+.vote-dot.in { border-style: solid; border-color: var(--ink); background: var(--green); color: #fff; }
+.reveal-box { animation: emote-panel-in .25s ease-out; }
+.verdict { font-family: var(--display); font-stretch: 75%; font-weight: 900; font-size: 1.6rem; text-transform: uppercase; margin-bottom: 10px; }
+.verdict.yes { color: var(--green); }
+.verdict.no { color: var(--red); }
+.answers { list-style: none; padding: 0; margin: 0; }
+.answers li { padding: 6px 0; border-bottom: 1.5px solid var(--hair); }
+.wyr-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; }
+.wyr-col { border: 2px solid var(--ink); border-radius: 10px; padding: 10px; color: #fff; }
+.wyr-col.opt-a { background: var(--blue); }
+.wyr-col.opt-b { background: var(--red); }
+.wyr-col-text { font-weight: 700; font-size: .95rem; }
+.wyr-pct { font-family: var(--display); font-stretch: 70%; font-weight: 900; font-size: 2rem; }
+.wyr-who { display: flex; flex-wrap: wrap; gap: 4px; }
+.wyr-who .tag { background: #fff; color: var(--ink); }
+.poll-score { max-width: 640px; margin: 14px auto 0; }
+.meter-head { display: flex; justify-content: space-between; align-items: baseline; }
+.meter-head strong { font-size: 1.6rem; font-family: var(--display); font-stretch: 75%; }
+.meter-bar { height: 14px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; overflow: hidden; margin: 6px 0; }
+.meter-bar span { display: block; height: 100%; background: var(--green); transition: width .4s; }
+
+/* ---------- dessine et devine ---------- */
+.dg-top { display: flex; justify-content: space-between; align-items: center; }
+.dg-timer {
+  font-family: var(--display); font-stretch: 75%; font-weight: 900; font-size: 1.5rem; min-width: 3.5em; text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.dg-timer.urgent { color: var(--red); animation: pulse-urgent 1s infinite; }
+@keyframes pulse-urgent { 50% { opacity: .45; } }
+.dg-word { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; min-height: 44px; margin: 6px 0 10px; }
+.dg-secret { font-family: var(--display); font-stretch: 80%; font-weight: 900; font-size: 1.7rem; letter-spacing: .04em; text-transform: uppercase; }
+.dg-mask { display: inline-flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+.dg-mask span { width: 22px; height: 30px; border-bottom: 3px solid var(--ink); font: 800 1.3rem/30px var(--body); text-align: center; text-transform: uppercase; }
+.dg-mask span.gap { border-bottom: 0; width: 12px; }
+.dg-mask span.shown { color: var(--red); }
+.dg-main { display: grid; gap: 14px; }
+@media (min-width: 900px) { .dg-main { grid-template-columns: minmax(0, 1fr) 300px; align-items: start; } }
+.dg-paper {
+  position: relative; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; background: #fff;
+  box-shadow: 5px 5px 0 var(--ink); aspect-ratio: 4 / 3;
+}
+.dg-canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: default; }
+.dg-canvas.can-draw { cursor: crosshair; }
+.dg-overlay {
+  position: absolute; inset: 0; background: rgba(242, 235, 221, .92); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; padding: 16px; text-align: center; overflow: auto;
+}
+.dg-overlay-title { font-family: var(--display); font-stretch: 75%; font-weight: 900; font-size: clamp(1.4rem, 5vw, 2.2rem); margin: 0; text-transform: uppercase; }
+.dg-choice { font-size: 1.15rem; padding: 12px 18px; }
+.dg-podium { list-style: none; padding: 0; margin: 0; width: min(320px, 100%); counter-reset: rank; }
+.dg-podium li { display: flex; justify-content: space-between; padding: 6px 10px; border-bottom: 1.5px solid var(--hair); counter-increment: rank; }
+.dg-podium li::before { content: counter(rank) "."; font-weight: 800; margin-right: 8px; }
+.dg-podium li span { flex: 1; text-align: left; }
+.dg-podium li:first-child { background: var(--gold); border: 2px solid var(--ink); border-radius: 6px; }
+.dg-tools { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.dg-colors, .dg-sizes { display: flex; flex-wrap: wrap; gap: 6px; }
+.dg-color { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--ink); cursor: pointer; }
+.dg-color.on { box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--ink); }
+.dg-size { width: 38px; height: 38px; border: 2px solid var(--ink); border-radius: 8px; background: var(--card); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.dg-size span { display: block; background: var(--ink); border-radius: 50%; }
+.dg-size.on { background: var(--gold); }
+.dg-panel { margin: 0 0 12px; padding: 10px 12px; }
+.dg-scores { list-style: none; margin: 0; padding: 0; }
+.dg-scores li { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1.5px solid var(--hair); }
+.dg-scores li:last-child { border-bottom: 0; }
+.dg-scores li .pname { flex: 1; }
+.dg-scores li.found .pname { color: var(--green); }
+.tag.ok { background: var(--green); color: #fff; }
+.dg-chat { list-style: none; margin: 0 0 8px; padding: 0; height: 190px; overflow-y: auto; font-size: .9rem; overflow-wrap: anywhere; }
+.dg-chat li { padding: 3px 0; }
+.dg-chat li.ok { color: var(--green); font-weight: 800; }
+.dg-chat li.close { color: #a86e00; font-weight: 800; }
+.dg-chat li.sys { font-weight: 800; border-top: 1.5px solid var(--hair); margin-top: 4px; padding-top: 6px; }
+.dg-guess input { min-width: 0; }

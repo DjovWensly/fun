@@ -22,6 +22,7 @@
   var ctx = {
     t: t, h: h,
     send: function (move) { return mutate('move', { move: move }); },
+    call: function (action, data) { return GP.api(action, Object.assign({ code: CODE, token: token }, data || {})); },
     player: function (seat) {
       if (!snap) return null;
       for (var i = 0; i < snap.players.length; i++) if (snap.players[i].seat === seat) return snap.players[i];
@@ -45,6 +46,7 @@
     var delay = base;
     if (document.hidden) delay = base * 3;
     else if (snap && snap.game && isBotTurn()) delay = 1100; // keep bot moves flowing
+    else if (snap && snap.game && UI.fastPoll && UI.fastPoll(snap.game)) delay = Math.max(900, Math.round(base / 2));
     pollTimer = setTimeout(poll, delay);
   }
 
@@ -59,6 +61,8 @@
   function poll() {
     var req = { code: CODE, token: token, v: version };
     if (GP.emotes.cursor() !== null) req.e = GP.emotes.cursor();
+    // Games can ask for extra data with each poll (the drawing in Dessine et devine).
+    if (snap && snap.room.status === 'playing' && UI.pollParams) Object.assign(req, UI.pollParams());
     GP.api('state', req).then(function (r) {
       if (!r.ok) {
         if (r.error === 'room_not_found') { stopped = true; showClosed(t('err_room_not_found')); return; }
@@ -70,6 +74,7 @@
       failures = 0;
       el('net-status').hidden = true;
       GP.emotes.receive(r);
+      if (UI.onPoll && mounted) UI.onPoll(r, ctx);
       if (r.same) updatePresence(r.presence);
       else apply(r);
       schedule();
@@ -190,6 +195,8 @@
       return n === 3 ? t('size_small') : t('size_big', { n: n });
     }
     if (GAME === 'truthdare') return [t('lvl_' + (o.level || 'soft')), t('order_' + (o.order || 'circle'))].join(' · ');
+    if (GAME === 'whoofus' || GAME === 'wouldrather') return t('lvl_' + (o.level || 'soft'));
+    if (GAME === 'drawguess') return [(o.rounds === 1 ? t('round_one') : t('rounds_n', { n: o.rounds || 2 })), t('secs', { n: o.time || 80 }), o.level === 'party' ? t('words_hard') : t('words_easy')].join(' · ');
     return '';
   }
 

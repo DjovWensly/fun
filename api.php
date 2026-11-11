@@ -21,6 +21,9 @@ header('Cache-Control: no-store, no-cache, must-revalidate');
 header('X-Robots-Tag: noindex');
 
 const GP_ONLINE_SECONDS = 20;   // a player not seen for this long is shown as offline
+// Allowed pen colours and sizes in Dessine et devine (must match assets/js/games/drawguess.js).
+const GP_DRAW_COLORS = ['#1c1915', '#ffffff', '#c4381d', '#1f4592', '#2f7d4f', '#e3a21a', '#7b4a22', '#e85d9a', '#8a8a8a', '#7a3fc0'];
+const GP_DRAW_WIDTHS = [4, 8, 16, 32];
 const GP_BOT_DELAY = 1;         // seconds between bot moves so humans can follow the game
 
 function out(array $data, int $code = 200): void
@@ -58,6 +61,8 @@ try {
             out(actionState($in));
         case 'emote':
             out(actionEmote($in));
+        case 'draw':
+            out(actionDraw($in));
         case 'start':
         case 'add_bot':
         case 'kick':
@@ -329,11 +334,28 @@ function actionState(array $in): array
         }
     }
 
+    // Games with a clock (Dessine et devine) move on by themselves when time runs out.
+    if ($room['status'] === 'playing' && gp_engine($room['game'])->tickDue($room['state'])) {
+        $engine = gp_engine($room['game']);
+        $db->beginTransaction();
+        $locked = loadRoom($code, true);
+        if ($locked['status'] === 'playing' && $engine->tick($locked['state'])) {
+            saveRoom($locked);
+            $db->commit();
+            $room = loadRoom($code, false);
+        } else {
+            $db->rollBack();
+        }
+    }
+
     $presence = [];
     foreach ($players as $p) {
         $presence[$p['seat']] = isOnline($p);
     }
-    $emotes = recentEmotes((int)$room['id'], isset($in['e']) ? (int)$in['e'] : -1);
+    $extra = $room['game'] === 'drawguess' && $room['status'] === 'playing'
+        ? ['strokes' => recentStrokes($room, isset($in['st']) ? (int)$in['st'] : -1, (int)($in['sk'] ?? 0))]
+        : [];
+    $emotes = $extra + recentEmotes((int)$room['id'], isset($in['e']) ? (int)$in['e'] : -1);
     if ($since > 0 && (int)$room['version'] === $since) {
         return ['ok' => true, 'same' => true, 'presence' => $presence] + $emotes;
     }
@@ -410,6 +432,101 @@ function actionEmote(array $in): array
     $id = (int)$db->lastInsertId();
     if ($id % 20 === 0) {
         $db->prepare('DELETE FROM gp_emotes WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 60)]);
+    }
+    return ['ok' => true, 'id' => $id];
+}
+
+// --- drawings (Dessine et devine) ------------------------------------------------------------
+// Strokes are not part of the game state (that would resend the whole drawing on every change):
+// they are appended to gp_strokes and each player fetches what is new since their last poll.
+
+
+function ensureStrokeTable(): void
+{
+    gp_db()->exec("CREATE TABLE IF NOT EXISTS gp_strokes (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        room_id INT UNSIGNED NOT NULL,
+        turn INT UNSIGNED NOT NULL,
+        data MEDIUMTEXT NOT NULL,
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (id),
+        KEY idx_room_turn (room_id, turn, id),
+        CONSTRAINT fk_strokes_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+}
+
+/** Drawing items for the current turn: all of them if the client is on another turn, else the new ones. */
+function recentStrokes(array $room, int $clientTurn, int $after): array
+{
+    $turn = (int)($room['state']['turnNo'] ?? 0);
+    if ($clientTurn !== $turn) {
+        $after = 0;
+    }
+    $items = [];
+    $cursor = $after;
+    try {
+        $st = gp_db()->prepare('SELECT id, data FROM gp_strokes WHERE room_id = ? AND turn = ? AND id > ? ORDER BY id LIMIT 300');
+        $st->execute([$room['id'], $turn, $after]);
+        foreach ($st->fetchAll() as $r) {
+            foreach (json_decode($r['data'], true) ?: [] as $it) {
+                $items[] = $it;
+            }
+            $cursor = (int)$r['id'];
+        }
+    } catch (PDOException $e) {
+        // table not created yet: nothing drawn so far
+    }
+    return ['turn' => $turn, 'cursor' => $cursor, 'items' => $items, 'reset' => $clientTurn !== $turn];
+}
+
+function actionDraw(array $in): array
+{
+    $code = cleanCode($in['code'] ?? '');
+    $room = loadRoom($code, false);
+    if ($room['game'] !== 'drawguess' || $room['status'] !== 'playing') {
+        throw new GameError('invalid_move');
+    }
+    $players = loadPlayers((int)$room['id']);
+    $me = findMe($players, (string)($in['token'] ?? ''));
+    $s = $room['state'];
+    if (!$me || $s['phase'] !== 'drawing' || (int)$s['drawer'] !== $me['seat'] || (int)($in['turn'] ?? -1) !== (int)$s['turnNo']) {
+        throw new GameError('not_drawer');
+    }
+    $clean = [];
+    foreach (array_slice((array)($in['items'] ?? []), 0, 40) as $it) {
+        if (!is_array($it)) {
+            continue;
+        }
+        if (in_array($it['t'] ?? '', ['undo', 'clear'], true)) {
+            $clean[] = ['t' => $it['t']];
+            continue;
+        }
+        $c = strtolower((string)($it['c'] ?? ''));
+        $w = (int)($it['w'] ?? 0);
+        $p = array_slice((array)($it['p'] ?? []), 0, 600);
+        if (!in_array($c, GP_DRAW_COLORS, true) || !in_array($w, GP_DRAW_WIDTHS, true) || count($p) < 2) {
+            continue;
+        }
+        $pts = [];
+        foreach ($p as $i => $v) {
+            $pts[] = max(0, min($i % 2 ? 600 : 800, (int)$v));
+        }
+        if (count($pts) % 2) {
+            array_pop($pts);
+        }
+        $clean[] = ['k' => (int)($it['k'] ?? 0), 'c' => $c, 'w' => $w, 'p' => $pts];
+    }
+    if (!$clean) {
+        return ['ok' => true, 'id' => 0];
+    }
+    ensureStrokeTable();
+    $db = gp_db();
+    $db->prepare('INSERT INTO gp_strokes (room_id, turn, data, created_at) VALUES (?,?,?,?)')
+        ->execute([$room['id'], (int)$s['turnNo'], json_encode($clean), gp_now()]);
+    $id = (int)$db->lastInsertId();
+    if ($id % 25 === 0) {
+        // drawings of earlier turns are no longer needed
+        $db->prepare('DELETE FROM gp_strokes WHERE room_id = ? AND turn < ?')->execute([$room['id'], (int)$s['turnNo']]);
     }
     return ['ok' => true, 'id' => $id];
 }
