@@ -24,26 +24,104 @@ function gp_config(): array
     return $cfg;
 }
 
+/** The database could not be reached or is not set up. $code is a short key the pages translate. */
+class SetupError extends RuntimeException
+{
+    public $key;
+
+    public function __construct(string $key, string $detail)
+    {
+        parent::__construct($detail);
+        $this->key = $key;
+    }
+}
+
+/** Turn a PDO error into a setup problem the user can fix, or null if it is a normal error. */
+function gp_setup_error(PDOException $e): ?SetupError
+{
+    $info = $e->errorInfo ?? null;
+    $driverCode = (int)($info[1] ?? 0);
+    $msg = $e->getMessage();
+    if ($driverCode === 0 && preg_match('/\[(\d{4})\]/', $msg, $m)) {
+        $driverCode = (int)$m[1]; // connection errors only carry the code in the message
+    }
+    $map = [
+        1049 => 'db_unknown',   // Unknown database
+        1044 => 'db_access',    // Access denied to database
+        1045 => 'db_access',    // Access denied for user (password)
+        1146 => 'db_tables',    // Table doesn't exist
+        2002 => 'db_down',      // Can't connect (MySQL not started / wrong host)
+        2005 => 'db_down',      // Unknown host
+        2006 => 'db_down',
+    ];
+    return isset($map[$driverCode]) ? new SetupError($map[$driverCode], $msg) : null;
+}
+
 function gp_db(): PDO
 {
     static $pdo = null;
     if ($pdo === null) {
         $c = gp_config();
-        $pdo = new PDO(
-            'mysql:host=' . $c['db_host'] . ';dbname=' . $c['db_name'] . ';charset=utf8mb4',
-            $c['db_user'],
-            $c['db_pass'],
-            [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]
-        );
+        if (!extension_loaded('pdo_mysql')) {
+            throw new SetupError('no_pdo', 'The pdo_mysql PHP extension is not enabled.');
+        }
+        try {
+            $pdo = new PDO(
+                'mysql:host=' . $c['db_host'] . ';dbname=' . $c['db_name'] . ';charset=utf8mb4',
+                $c['db_user'],
+                $c['db_pass'],
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_TIMEOUT => 5,
+                ]
+            );
+        } catch (PDOException $e) {
+            throw gp_setup_error($e) ?? new SetupError('db_down', $e->getMessage());
+        }
         // Keep all timestamps in UTC regardless of the server setting.
         $pdo->exec("SET time_zone = '+00:00'");
     }
     return $pdo;
 }
+
+/** Plain-language explanation of a setup problem (shown on pages and by check.php). */
+function gp_setup_help(string $key): string
+{
+    $help = [
+        'db_unknown' => 'The database named in config.php (db_name) does not exist. Create it in phpMyAdmin, then import install.sql into it.',
+        'db_access'  => 'MySQL refused access: check db_user / db_pass in config.php, and that the database in db_name exists. On XAMPP the default is user "root" with an empty password. On InfinityFree use the values from Control Panel > MySQL Databases.',
+        'db_tables'  => 'The database exists but the tables are missing. In phpMyAdmin, select the database, then Import > install.sql > Go.',
+        'db_down'    => 'Cannot reach the MySQL server. On XAMPP: open the XAMPP Control Panel and click Start next to MySQL. On InfinityFree: db_host must be the sqlXXX.infinityfree.com address, not "localhost".',
+        'no_pdo'     => 'PHP\'s pdo_mysql extension is off. In XAMPP, open php.ini and make sure the line "extension=pdo_mysql" has no ";" in front of it, then restart Apache.',
+    ];
+    return $help[$key] ?? 'Database error.';
+}
+
+/** Friendly page for setup problems on normal (HTML) pages instead of a PHP fatal error. */
+function gp_setup_page(SetupError $e): void
+{
+    http_response_code(500);
+    echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+        . '<title>Setup problem</title><body style="font:16px/1.5 system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px">'
+        . '<h1>Setup problem</h1><p><strong>' . gp_h(gp_setup_help($e->key)) . '</strong></p>'
+        . '<p style="color:#666">Details: ' . gp_h($e->getMessage()) . '</p>'
+        . '<p><a href="check.php">Run the setup check (check.php)</a></p></body>';
+}
+
+set_exception_handler(function (Throwable $e) {
+    if ($e instanceof PDOException && ($s = gp_setup_error($e))) {
+        $e = $s;
+    }
+    if ($e instanceof SetupError) {
+        gp_setup_page($e);
+        return;
+    }
+    error_log('[games] ' . $e);
+    http_response_code(500);
+    echo 'Server error. Details are in the PHP error log.';
+});
 
 function gp_now(): string
 {

@@ -277,3 +277,10 @@ details > summary { cursor: pointer; font-weight: 600; }
 .prompt-actions .btn.tiny { margin-left: 0; }
 @media (min-width: 640px) { .prompt-actions { flex-direction: row; } }
 .admin .room-title { margin-bottom: 12px; }
+
+.setup-banner {
+  background: #7f1d1d; color: #fff; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px;
+  border-bottom: 2px solid var(--bad); overflow-wrap: anywhere;
+}
+.setup-banner .small { opacity: .8; }
+.setup-banner a { color: #fde68a; }

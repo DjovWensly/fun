@@ -40,9 +40,10 @@ Bots play one move per second or so, which lets everyone see what happened.
 3. **Configure**: copy `config.sample.php` to `config.php` and fill in the values from step 1.
 4. **Upload** everything with the *Online File Manager* or FileZilla into
    `htdocs/games/` (so it lives at `https://dwens.gamer.gd/games/`). Upload: `api.php`, `index.php`,
-   `room.php`, `local.php`, `admin.php`, `config.php`, `.htaccess`, and the folders `assets/`, `data/`, `inc/`.
+   `room.php`, `local.php`, `admin.php`, `check.php`, `config.php`, `.htaccess`, and the folders `assets/`, `data/`, `inc/`.
    (`install.sql`, `README.md` and `config.sample.php` don't need to be online.)
-5. **Link it from your main page**, e.g. in `htdocs/index.html` / `index.php`:
+5. Open `https://dwens.gamer.gd/games/check.php`: every line should be green.
+6. **Link it from your main page**, e.g. in `htdocs/index.html` / `index.php`:
 
    ```html
    <a href="/games/">🎲 Jeux entre amis</a>
@@ -50,7 +51,7 @@ Bots play one move per second or so, which lets everyone see what happened.
 
    You can also link straight to a game's join box: `/games/index.php?join=K7XQM`.
 
-6. **Set an admin password** (optional): put `'admin_password' => '...'` in `config.php`, then open
+7. **Set an admin password** (optional): put `'admin_password' => '...'` in `config.php`, then open
    `https://dwens.gamer.gd/games/admin.php` to manage the Truth or Dare questions.
 
 Changed CSS/JS but phones still show the old version? Increase `GP_ASSET_VERSION` in `inc/layout.php`.
@@ -76,10 +77,38 @@ InfinityFree counts every request ("hits", ~50,000/day). One player polling for 
 close, raise the delays in `schedule()` in `assets/js/room.js`. Rooms with no activity for 24 h are
 deleted automatically (`room_ttl_hours` in `config.php`).
 
+## Something doesn't work? Open `check.php`
+
+`check.php` checks the PHP version and extensions, `config.php`, the connection to MySQL, the database,
+the tables, and the game API. It explains in plain words what to fix for each red line, and it can create
+missing tables with one click. Your password is never shown. You can delete it once everything is green.
+
+If the database can't be reached, the games themselves now show the reason in a red box at the top of
+the page instead of a generic "connection problem".
+
 ## Running it on your computer
 
-Use XAMPP/WAMP/Laragon (or `php -S localhost:8080` with a local MySQL/MariaDB), import `install.sql`,
-create `config.php` with `db_host => 'localhost'`, and open `http://localhost:8080/`.
+With **XAMPP** (Windows/Mac/Linux):
+
+1. Start **Apache** and **MySQL** in the XAMPP Control Panel (both must be green).
+2. Put the project in `C:\xampp\htdocs\fun\`.
+3. In `http://localhost/phpmyadmin`: **New** → create a database `games` → **Import** → `install.sql`.
+4. Create `config.php`:
+
+   ```php
+   <?php
+   return [
+       'db_host' => 'localhost',
+       'db_name' => 'games',
+       'db_user' => 'root',
+       'db_pass' => '',
+       'admin_password' => 'choose-one',
+       'home_url' => 'https://dwens.gamer.gd/',
+       'room_ttl_hours' => 24,
+   ];
+   ```
+
+5. Open `http://localhost/fun/check.php`; when everything is green, go to `http://localhost/fun/`.
 To test with several players on one computer, use different browsers or private windows (each one is a
 separate player).
 
@@ -89,6 +118,7 @@ separate player).
 index.php            home: pick a name, join with a code, create a room
 room.php             the room page (waiting room + game)
 local.php            Truth or Dare on a single phone (no database)
+check.php            setup check (PHP, config, database, tables, API)
 api.php              JSON API: create, join, state (polling), start, add_bot, kick, leave, move, lobby, prompts
 install.sql          database tables (gp_rooms, gp_players)
 config.sample.php    copy to config.php

@@ -10,6 +10,10 @@ declare(strict_types=1);
  * {"same": true} payload so polling stays cheap.
  */
 
+// Warnings printed by PHP (XAMPP shows them by default) would break the JSON: log them instead.
+ini_set('display_errors', '0');
+ob_start();
+
 require __DIR__ . '/inc/bootstrap.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -21,6 +25,9 @@ const GP_BOT_DELAY = 1;         // seconds between bot moves so humans can follo
 
 function out(array $data, int $code = 200): void
 {
+    while (ob_get_level() > 0) {
+        ob_end_clean(); // drop any stray output (PHP notices, BOM, stray spaces)
+    }
     http_response_code($code);
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
@@ -61,9 +68,17 @@ try {
     }
 } catch (GameError $e) {
     out(['ok' => false, 'error' => $e->getMessage()]);
+} catch (SetupError $e) {
+    out(['ok' => false, 'error' => $e->key, 'help' => gp_setup_help($e->key), 'detail' => $e->getMessage()], 500);
 } catch (Throwable $e) {
-    if (gp_db()->inTransaction()) {
-        gp_db()->rollBack();
+    if ($e instanceof PDOException && ($s = gp_setup_error($e))) {
+        out(['ok' => false, 'error' => $s->key, 'help' => gp_setup_help($s->key), 'detail' => $e->getMessage()], 500);
+    }
+    try {
+        if (gp_db()->inTransaction()) {
+            gp_db()->rollBack();
+        }
+    } catch (Throwable $ignored) {
     }
     error_log('[games api] ' . $e);
     out(['ok' => false, 'error' => 'server_error'], 500);

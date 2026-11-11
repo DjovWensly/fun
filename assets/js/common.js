@@ -143,6 +143,8 @@
       err_card_too_short: 'Carte trop courte.',
       err_too_many_cards: 'Trop de cartes ajoutées.',
       err_no_cards: 'Aucune carte dans ce paquet.',
+      err_bad_response: 'Le serveur a renvoyé une erreur PHP au lieu d\'une réponse du jeu.',
+      run_check: 'Lancer la vérification de l\'installation (check.php)',
       err_network: 'Problème de connexion.',
       err_server_error: 'Erreur du serveur, réessaie.',
       err_generic: 'Action impossible.'
@@ -282,6 +284,8 @@
       err_card_too_short: 'Card is too short.',
       err_too_many_cards: 'Too many cards added.',
       err_no_cards: 'No cards in this deck.',
+      err_bad_response: 'The server sent a PHP error instead of a game response.',
+      run_check: 'Run the setup check (check.php)',
       err_network: 'Connection problem.',
       err_server_error: 'Server error, try again.',
       err_generic: 'You can\'t do that.'
@@ -330,9 +334,37 @@
       body: JSON.stringify(body)
     }).then(function (r) {
       return r.text().then(function (txt) {
-        try { return JSON.parse(txt); } catch (e) { return { ok: false, error: r.ok ? 'network' : 'server_error' }; }
+        var j;
+        try { j = JSON.parse(txt); } catch (e) {
+          // The server answered with something that is not JSON (usually a PHP error page).
+          var plain = txt.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+          console.error('api.php returned non-JSON (HTTP ' + r.status + '):', txt);
+          setupBanner(t('err_bad_response'), plain.slice(0, 300));
+          return { ok: false, error: 'server_error', silent: true };
+        }
+        if (j && j.help) {
+          console.error('Setup problem:', j.error, j.detail);
+          setupBanner(j.help, j.detail);
+          j.silent = true;
+        }
+        return j;
       });
     }).catch(function () { return { ok: false, error: 'network' }; });
+  }
+
+  /** A box that stays on screen explaining a server/database setup problem. */
+  function setupBanner(help, detail) {
+    var box = document.getElementById('setup-banner');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'setup-banner';
+      box.className = 'setup-banner';
+      document.body.insertBefore(box, document.body.firstChild.nextSibling);
+    }
+    box.innerHTML = '';
+    box.appendChild(h('strong', null, '⚠️ ' + help));
+    if (detail) box.appendChild(h('div', { class: 'small' }, detail));
+    box.appendChild(h('a', { href: 'check.php' }, t('run_check')));
   }
 
   function errText(code) {
@@ -343,6 +375,7 @@
 
   var toastTimer;
   function toast(msg, isError) {
+    if (document.getElementById('setup-banner') && isError) return; // the banner already explains it
     var el = document.getElementById('toast');
     if (!el) {
       el = document.createElement('div');
