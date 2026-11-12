@@ -144,7 +144,64 @@
     });
   }
 
-  // ---------- the table: chain laid out as a snake ----------
+  // ---------- the table: the first tile stays in the middle, the chain grows on both sides ----------
+  //
+  // Positions are computed on a grid where 1 unit = half a domino. A tile lying flat is 2 x 1,
+  // a double (placed crosswise) or an upright tile is 1 x 2. The right arm goes right and turns
+  // downward at the edge of the table; the left arm goes left and turns upward. Each turn is a
+  // column of two upright tiles, which leaves room for the doubles of the next row.
+  var TURN_TILES = 2;
+
+  /** Lay out one arm. tiles: [{i, near, far}] from the centre outwards. */
+  function walkArm(tiles, x, dir, vdir, B) {
+    var rects = [], axis = 0, mode = 'row', colX = 0, colY = 0, colN = 0;
+    tiles.forEach(function (t) {
+      var dbl = t.near === t.far;
+      if (mode === 'row') {
+        var w = dbl ? 1 : 2;
+        if (dir > 0 ? x + w > B - 1 : x - w < -(B - 1)) {
+          mode = 'col'; colX = dir > 0 ? x : x - 1; colY = vdir > 0 ? axis - 0.5 : axis + 0.5; colN = 0;
+        } else {
+          rects.push({ i: t.i, x: dir > 0 ? x : x - w, y: axis - (dbl ? 1 : 0.5), w: w, h: dbl ? 2 : 1, o: dbl ? 'v' : 'h',
+            a: dir > 0 ? t.near : t.far, b: dir > 0 ? t.far : t.near });
+          x += dir * w;
+          return;
+        }
+      }
+      // upright tile in the turn
+      rects.push({ i: t.i, x: colX, y: vdir > 0 ? colY : colY - 2, w: 1, h: 2, o: 'v',
+        a: vdir > 0 ? t.near : t.far, b: vdir > 0 ? t.far : t.near });
+      colY += vdir * 2;
+      colN++;
+      if (colN >= TURN_TILES) {
+        mode = 'row';
+        axis = colY - vdir * 0.5;
+        x = dir > 0 ? colX : colX + 1;
+        dir = -dir;
+      }
+    });
+    // where the next tile would start: that's where the end marker goes
+    var slot = mode === 'row' ? { x: x + dir * 0.5, y: axis } : { x: colX + 0.5, y: colY + vdir * 0.5 };
+    return { rects: rects, slot: slot };
+  }
+
+  function layoutChain(chain, origin, B) {
+    var o = chain[origin];
+    var dbl = o[0] === o[1];
+    var half = dbl ? 0.5 : 1;
+    var rects = [{ i: origin, x: -half, y: dbl ? -1 : -0.5, w: dbl ? 1 : 2, h: dbl ? 2 : 1, o: dbl ? 'v' : 'h', a: o[0], b: o[1] }];
+    var right = [], left = [];
+    for (var i = origin + 1; i < chain.length; i++) right.push({ i: i, near: chain[i][0], far: chain[i][1] });
+    for (var j = origin - 1; j >= 0; j--) left.push({ i: j, near: chain[j][1], far: chain[j][0] });
+    var R = walkArm(right, half, 1, 1, B);
+    var L = walkArm(left, -half, -1, -1, B);
+    rects = rects.concat(R.rects, L.rects);
+    var reach = 1;
+    rects.forEach(function (r) { reach = Math.max(reach, Math.abs(r.y), Math.abs(r.y + r.h)); });
+    [R.slot, L.slot].forEach(function (sl) { reach = Math.max(reach, Math.abs(sl.y) + 0.6); });
+    return { rects: rects, slots: { L: L.slot, R: R.slot }, reach: reach };
+  }
+
   function drawBoard(g) {
     var felt = els.felt;
     felt.innerHTML = '';
@@ -155,73 +212,87 @@
     els.info.appendChild(h('span', null, info.join('')));
     els.info.appendChild(h('span', null, g.mode === 'fives' && g.chain.length ? t('ends_count', { n: g.ends }) : ''));
     felt.appendChild(els.info);
+    els.badges = {};
 
     if (!g.chain.length) {
       if (g.phase === 'playing') felt.appendChild(h('p', { class: 'felt-empty' }, t('turn_of', { name: ctx.name(g.turn) })));
       return;
     }
 
+    var board = h('div', { class: 'chain-board' });
+    felt.appendChild(board);
+    var W = board.clientWidth, H = board.clientHeight;
+    var origin = Math.max(0, Math.min(g.chain.length - 1, g.origin !== undefined ? g.origin : Math.floor(g.chain.length / 2)));
+
+    // Biggest tiles that fit: large while the chain is short, smaller as it grows.
+    var u = Math.min(W > 700 ? 46 : 34, Math.floor(W / 9));
+    var plan;
+    for (; u >= 10; u--) {
+      plan = layoutChain(g.chain, origin, W / (2 * u) - 0.15);
+      if (2 * plan.reach * u <= H) break;
+    }
+    var cx = W / 2, cy = H / 2;
     var lastIdx = -1;
     if (g.last && g.last.tile) lastIdx = g.last.side === 'L' ? 0 : g.chain.length - 1;
+    var s = Math.max(6, u - 4);
 
-    var W = felt.clientWidth - 24;
-    var H = felt.clientHeight - 48;
-    // Largest tiles that still fit the table: big while the chain is short, smaller as it grows.
-    var maxU = W > 700 ? 44 : 30;
-    var plan = null;
-    for (var u = maxU; u >= 12; u -= 2) {
-      plan = planRows(g.chain, u, W);
-      if (plan.height <= H) break;
-    }
-    var snake = h('div', { class: 'snake' });
-    plan.rows.forEach(function (row, r) {
-      var rev = r % 2 === 1;
-      var rowEl = h('div', { class: 'snake-row' + (rev ? ' rev' : '') });
-      if (plan.rows.length === 1) rowEl.style.justifyContent = 'center';
-      row.forEach(function (i) {
-        var tl = g.chain[i];
-        var dbl = tl[0] === tl[1];
-        // On right-to-left rows the tile is drawn flipped so matching numbers still touch.
-        var a = rev ? tl[1] : tl[0], b = rev ? tl[0] : tl[1];
-        rowEl.appendChild(tile(a, b, dbl ? 'v' : 'h', i === lastIdx ? 'last' : '', plan.u));
+    plan.rects.forEach(function (r) {
+      var cell = h('div', { class: 'chain-cell', 'data-i': r.i, style: 'left:' + (cx + r.x * u) + 'px;top:' + (cy + r.y * u) + 'px;width:' + (r.w * u) + 'px;height:' + (r.h * u) + 'px' });
+      cell.appendChild(tile(r.a, r.b, r.o, (r.i === lastIdx ? 'last' : '') + (r.i === origin ? ' origin' : ''), s));
+      board.appendChild(cell);
+    });
+
+    // End markers: the number to match, where the next tile would go.
+    if (g.phase === 'playing') {
+      var ends = { L: g.chain[0][0], R: g.chain[g.chain.length - 1][1] };
+      var size = Math.max(26, Math.round(u * 0.95));
+      ['L', 'R'].forEach(function (side) {
+        var sl = plan.slots[side];
+        var badge = h('button', {
+          type: 'button', class: 'end-badge end-' + side, 'aria-label': (side === 'L' ? t('left') : t('right')) + ' ' + ends[side],
+          style: 'left:' + (cx + sl.x * u - size / 2) + 'px;top:' + (cy + sl.y * u - size / 2) + 'px;width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size * 0.55) + 'px'
+        }, String(ends[side]));
+        badge.disabled = true;
+        els.badges[side] = badge;
+        board.appendChild(badge);
       });
-      snake.appendChild(rowEl);
-    });
-    felt.appendChild(snake);
-  }
-
-  /** Fill rows from left to right with tiles of half-size u; returns the rows and total height. */
-  function planRows(chain, u, width) {
-    var wide = 2 * u + 5, narrow = u + 3, gap = 2, rowGap = 8;
-    var rows = [[]], x = 0, heights = [u + 3];
-    chain.forEach(function (tl, i) {
-      var dbl = tl[0] === tl[1];
-      var w = dbl ? narrow : wide;
-      if (x > 0 && x + w > width) { rows.push([]); heights.push(u + 3); x = 0; }
-      rows[rows.length - 1].push(i);
-      if (dbl) heights[heights.length - 1] = 2 * u + 5;
-      x += w + gap;
-    });
-    var height = heights.reduce(function (a, b) { return a + b; }, 0) + rowGap * (rows.length - 1);
-    return { rows: rows, height: height, u: u };
+    }
   }
 
   // ---------- moves ----------
   function pick(i, sides) {
     var tl = state.hand[i];
     var ends = state.chain.length ? [state.chain[0][0], state.chain[state.chain.length - 1][1]] : null;
+    clearBadgeChoice();
     // Ask only when both sides are possible and it actually makes a difference.
     if (sides.length > 1 && ends && ends[0] !== ends[1]) {
+      var play = function (side) { send({ type: 'play', tile: tl, side: side }); };
       els.choose.innerHTML = '';
       els.choose.appendChild(h('span', null, t('where_play')));
-      els.choose.appendChild(h('button', { class: 'btn primary', onclick: function () { send({ type: 'play', tile: tl, side: 'L' }); } }, t('left') + ' (' + ends[0] + ')'));
-      els.choose.appendChild(h('button', { class: 'btn primary', onclick: function () { send({ type: 'play', tile: tl, side: 'R' }); } }, t('right') + ' (' + ends[1] + ')'));
-      els.choose.appendChild(h('button', { class: 'btn ghost', onclick: function () { els.choose.hidden = true; } }, t('cancel')));
+      els.choose.appendChild(h('button', { class: 'btn primary', onclick: function () { play('L'); } }, t('left') + ' (' + ends[0] + ')'));
+      els.choose.appendChild(h('button', { class: 'btn primary', onclick: function () { play('R'); } }, t('right') + ' (' + ends[1] + ')'));
+      els.choose.appendChild(h('button', { class: 'btn ghost', onclick: function () { els.choose.hidden = true; clearBadgeChoice(); } }, t('cancel')));
       els.choose.hidden = false;
-      els.choose.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // The two markers on the table can be tapped as well.
+      ['L', 'R'].forEach(function (side) {
+        var b = els.badges && els.badges[side];
+        if (!b) return;
+        b.disabled = false;
+        b.classList.add('choose');
+        b.onclick = function () { play(side); };
+      });
       return;
     }
     send({ type: 'play', tile: tl, side: sides[sides.length - 1] });
+  }
+
+  function clearBadgeChoice() {
+    if (!els.badges) return;
+    ['L', 'R'].forEach(function (side) {
+      var b = els.badges[side];
+      if (!b) return;
+      b.disabled = true; b.classList.remove('choose'); b.onclick = null;
+    });
   }
 
   function send(move) {

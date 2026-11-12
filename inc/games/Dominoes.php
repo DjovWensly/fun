@@ -87,6 +87,7 @@ class Dominoes extends GameEngine
         $state['hands'] = $hands;
         $state['boneyard'] = $tiles; // in block mode these tiles just sit out ("sleeping")
         $state['chain'] = [];
+        $state['origin'] = 0; // index in the chain of the first tile played (it stays in the middle of the table)
         $state['turn'] = $starter;
         $state['passes'] = 0;
         $state['phase'] = 'playing';
@@ -359,6 +360,7 @@ class Dominoes extends GameEngine
             // the right half of the new tile must touch the left end
             $t = $tile[1] === $ends[0] ? $tile : [$tile[1], $tile[0]];
             array_unshift($state['chain'], $t);
+            $state['origin'] = ($state['origin'] ?? 0) + 1;
         } else {
             $t = $tile[0] === $ends[1] ? $tile : [$tile[1], $tile[0]];
             $state['chain'][] = $t;
@@ -517,6 +519,7 @@ class Dominoes extends GameEngine
             'phase'    => $state['phase'],
             'turn'     => $state['turn'],
             'chain'    => $state['chain'],
+            'origin'   => (int)($state['origin'] ?? intdiv(count($state['chain']), 2)),
             'ends'     => $this->endsCount($state['chain']),
             'boneyard' => count($state['boneyard']),
             'counts'   => (object)$counts,
