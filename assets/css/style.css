@@ -638,3 +638,14 @@ fieldset.pair legend { font-weight: 700; margin-bottom: 4px; padding: 0; }
 .dg-chat li.close { color: #a86e00; font-weight: 800; }
 .dg-chat li.sys { font-weight: 800; border-top: 1.5px solid var(--hair); margin-top: 4px; padding-top: 6px; }
 .dg-guess input { min-width: 0; }
+
+/* ---------- footer ---------- */
+.site-footer {
+  border-top: 2px solid var(--ink); background: var(--ink); color: #cfc3ad;
+  text-align: center; font-size: .85rem; padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+}
+.site-footer p { margin: 2px 0; }
+.site-footer a { color: var(--paper); }
+/* keep the footer at the bottom of the screen on short pages */
+body { display: flex; flex-direction: column; }
+body > main { flex: 1 0 auto; width: 100%; }

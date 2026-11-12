@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '10';
+const GP_ASSET_VERSION = '11';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -89,7 +89,7 @@ function gp_header(string $titleKey, string $extraTitle = ''): void
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#1c1915">
   <title><?= $extraTitle !== '' ? gp_h($extraTitle) . ' · ' : '' ?><?= gp_h((gp_setting('site_title')['fr'] ?? '') ?: 'Soirée Jeux') ?></title>
-  <link rel="icon" href="data:image/svg+xml,<?= rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 30"><rect x="1" y="1" width="16" height="28" rx="3" fill="#fbf7ec" stroke="#1c1915" stroke-width="2"/><line x1="4" y1="15" x2="14" y2="15" stroke="#1c1915"/><g fill="#1c1915"><circle cx="9" cy="8" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="12" cy="24" r="2"/></g></svg>') ?>">
+<?= gp_icon_tags() ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
@@ -110,7 +110,47 @@ function gp_header(string $titleKey, string $extraTitle = ''): void
 <?php
 }
 
+/**
+ * Browser-tab icon. Put your own files in the img/ folder and they are used automatically:
+ *   img/favicon.ico (or img/favicon.png / img/favicon.svg) and img/apple-touch-icon.png (phone home screen).
+ * Without them, a small domino drawing is used.
+ */
+function gp_icon_tags(): string
+{
+    $tags = '';
+    $types = ['favicon.ico' => 'image/x-icon', 'favicon.png' => 'image/png', 'favicon.svg' => 'image/svg+xml'];
+    foreach ($types as $file => $mime) {
+        $path = GP_ROOT . '/img/' . $file;
+        if (is_file($path)) {
+            // ?v=... so browsers notice when you replace the file
+            $tags .= '  <link rel="icon" type="' . $mime . '" href="img/' . $file . '?v=' . filemtime($path) . '">' . "\n";
+            break;
+        }
+    }
+    if ($tags === '') {
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 30"><rect x="1" y="1" width="16" height="28" rx="3" fill="#fbf7ec" stroke="#1c1915" stroke-width="2"/><line x1="4" y1="15" x2="14" y2="15" stroke="#1c1915"/><g fill="#1c1915"><circle cx="9" cy="8" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="12" cy="24" r="2"/></g></svg>';
+        $tags .= '  <link rel="icon" href="data:image/svg+xml,' . rawurlencode($svg) . '">' . "\n";
+    }
+    $touch = GP_ROOT . '/img/apple-touch-icon.png';
+    if (is_file($touch)) {
+        $tags .= '  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=' . filemtime($touch) . '">' . "\n";
+    }
+    return $tags;
+}
+
+/**
+ * Bottom of every page. The text comes from admin.php > Settings > "Footer text"
+ * ({year} and {site} are replaced), or the built-in text in assets/js/common.js (key footer_text).
+ */
 function gp_footer(): void
 {
-    echo "</body>\n</html>\n";
+    $home = (string)gp_setting('home_url');
+    ?>
+<footer class="site-footer">
+  <p data-i18n="footer_text"></p>
+  <?php if ($home !== ''): ?><p><a href="<?= gp_h($home) ?>" data-i18n="back_home"></a></p><?php endif; ?>
+</footer>
+</body>
+</html>
+<?php
 }

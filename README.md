@@ -142,6 +142,21 @@ With **XAMPP** (Windows/Mac/Linux):
 To test with several players on one computer, use different browsers or private windows (each one is a
 separate player).
 
+## Changing the name, footer, icon and texts
+
+`index.php` only holds the middle of the home page. The rest lives here:
+
+| What | Easiest way | In the code |
+|---|---|---|
+| Site name (top bar, tab title, footer) | admin.php → Settings → Site name | `site_title` in `assets/js/common.js` |
+| Home page title and sentence | admin.php → Settings | `hero_title`, `tagline` in `assets/js/common.js` |
+| Footer text (`{year}`, `{site}` are replaced) | admin.php → Settings → Footer text | `footer_text` in `assets/js/common.js`; HTML in `gp_footer()` in `inc/layout.php` |
+| Link back to the main site | admin.php → Settings | `gp_footer()` / `gp_header()` in `inc/layout.php` |
+| Tab icon | replace `img/favicon.ico` (or put `img/favicon.png` / `img/favicon.svg`) | `gp_icon_tags()` in `inc/layout.php` |
+| Phone home-screen icon | replace `img/apple-touch-icon.png` (180 × 180) | same |
+| Every other text (buttons, games…) | — | the `fr` and `en` lists at the top of `assets/js/common.js` |
+| Colours and fonts | — | the variables at the top of `assets/css/style.css` |
+
 ## Project layout
 
 ```
@@ -149,6 +164,7 @@ index.php            home: pick a name, join with a code, create a room
 room.php             the room page (waiting room + game)
 local.php            Truth or Dare on a single phone (no database)
 check.php            setup check (PHP, config, database, tables, API)
+img/                 favicon.ico and apple-touch-icon.png (replace with your own)
 api.php              JSON API: create, join, state (polling), start, add_bot, kick, leave, move, lobby, prompts
 install.sql          database tables (gp_rooms, gp_players)
 config.sample.php    copy to config.php

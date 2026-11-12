@@ -16,6 +16,7 @@ function gp_settings_defaults(): array
         'site_title'     => ['fr' => '', 'en' => ''],   // empty = built-in "Soirée Jeux" / "Game Night"
         'hero_title'     => ['fr' => '', 'en' => ''],
         'tagline'        => ['fr' => '', 'en' => ''],
+        'footer_text'    => ['fr' => '', 'en' => ''],
         'default_lang'   => 'auto',                      // auto (from the browser) | fr | en
         'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true, 'whoofus' => true, 'wouldrather' => true, 'drawguess' => true],
         'home_url'       => (string)($cfg['home_url'] ?? ''),
@@ -117,8 +118,8 @@ function gp_public_config(): array
     return [
         'texts' => [
             // (object) so an empty list is sent as {} and not [] (see common.js t())
-            'fr' => (object)array_filter(['site_title' => $s['site_title']['fr'] ?? '', 'hero_title' => $s['hero_title']['fr'] ?? '', 'tagline' => $s['tagline']['fr'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
-            'en' => (object)array_filter(['site_title' => $s['site_title']['en'] ?? '', 'hero_title' => $s['hero_title']['en'] ?? '', 'tagline' => $s['tagline']['en'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
+            'fr' => (object)array_filter(['site_title' => $s['site_title']['fr'] ?? '', 'hero_title' => $s['hero_title']['fr'] ?? '', 'tagline' => $s['tagline']['fr'] ?? '', 'footer_text' => $s['footer_text']['fr'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
+            'en' => (object)array_filter(['site_title' => $s['site_title']['en'] ?? '', 'hero_title' => $s['hero_title']['en'] ?? '', 'tagline' => $s['tagline']['en'] ?? '', 'footer_text' => $s['footer_text']['en'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
         ],
         'lang'         => $s['default_lang'],
         'pollMs'       => max(1000, min(6000, (int)$s['poll_ms'])),

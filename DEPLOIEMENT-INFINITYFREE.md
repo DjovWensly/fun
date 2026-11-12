@@ -115,6 +115,7 @@ local.php
 room.php
 assets/            ← tout le dossier (css, js, js/games)
 data/              ← prompts.json et reactions.json
+img/               ← favicon.ico et apple-touch-icon.png (tes icônes)
 inc/               ← tout le dossier, y compris inc/.htaccess et inc/games/
 ```
 

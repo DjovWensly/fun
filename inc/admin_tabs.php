@@ -85,6 +85,7 @@ function gp_admin_tabs_post(string $action): ?array
             'site_title'     => $texts('site_title'),
             'hero_title'     => $texts('hero_title'),
             'tagline'        => $texts('tagline'),
+            'footer_text'    => $texts('footer_text'),
             'default_lang'   => in_array($lang, ['auto', 'fr', 'en'], true) ? $lang : 'auto',
             'games'          => $games,
             'home_url'       => mb_substr($url, 0, 200),
@@ -234,6 +235,7 @@ function gp_admin_settings_page(string $csrf): void
       <?= $text('site_title', 'Site name (top bar)', 'Soirée Jeux', 'Game Night') ?>
       <?= $text('hero_title', 'Home page title', 'Ce soir, on joue.', 'Tonight, we play.') ?>
       <?= $text('tagline', 'Home page sentence', 'Choisis un jeu, envoie le code à tes amis, et c\'est parti.', 'Pick a game, send the code to your friends, and you\'re in.') ?>
+      <?= $text('footer_text', 'Footer text (bottom of every page; {year} = current year, {site} = site name)', '© {year} {site} · Des jeux à partager entre amis.', '© {year} {site} · Games to share with friends.') ?>
       <label class="field"><span>Language for new visitors</span>
         <?= $select('default_lang', ['auto' => 'Same as their phone or browser', 'fr' => 'Français', 'en' => 'English'], $s['default_lang']) ?>
       </label>

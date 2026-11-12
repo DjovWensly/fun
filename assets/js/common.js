@@ -6,6 +6,7 @@
     fr: {
       site_title: 'Soirée Jeux',
       hero_title: 'Ce soir, on joue.',
+      footer_text: '© {year} {site} · Des jeux à partager entre amis.',
       tagline: 'Choisis un jeu, envoie le code à tes amis, et c\'est parti.',
       back_home: 'dwens.gamer.gd',
       your_name: 'Ton nom',
@@ -255,6 +256,7 @@
     en: {
       site_title: 'Game Night',
       hero_title: 'Tonight, we play.',
+      footer_text: '© {year} {site} · Games to share with friends.',
       tagline: 'Pick a game, send the code to your friends, and you\'re in.',
       back_home: 'dwens.gamer.gd',
       your_name: 'Your name',
@@ -529,7 +531,9 @@
 
   function applyI18n(root) {
     root = root || document;
-    root.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
+    // {year} and {site} can be used in any text, e.g. the footer
+    var common = { year: new Date().getFullYear(), site: t('site_title') };
+    root.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n'), common); });
     root.querySelectorAll('[data-i18n-ph]').forEach(function (el) { el.placeholder = t(el.getAttribute('data-i18n-ph')); });
     document.documentElement.lang = lang;
   }
