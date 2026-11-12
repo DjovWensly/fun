@@ -1,5 +1,5 @@
 {
-    "generated": "2026-11-12 15:23",
+    "generated": "2026-11-12 15:31",
     "files": {
         "admin.php": "6271da22cecce18df9101dca4f7d304aa5050b87",
         "api.php": "cf6c975722825588e1a9bfdd85ee941f45aaa00a",
@@ -33,7 +33,7 @@
         "inc/games/TruthDare.php": "fee01ddf31630a72cc358e99628915a570d614ba",
         "inc/games/WhoOfUs.php": "5515a4d84720548a7481c25eb2c5a8cba481fa35",
         "inc/games/WouldRather.php": "9b9e8ae74d0f2c36082015d4828e0ef4f32f5a2d",
-        "inc/layout.php": "97ebf4d04f77a13b06a7e602808c3522da065bd2",
+        "inc/layout.php": "072339ac7a22053bc908631d30f919fc17acc458",
         "inc/prompts.php": "a75fced0cedd6b30c65c61befff91af28137e431",
         "inc/settings.php": "b4a8beeb448daf6b876a140c6edc5f2ea86983cf",
         "index.php": "8c42ed27d3123a0bc1fec0630c099dd25c3906ae",

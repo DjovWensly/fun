@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '15';
+const GP_ASSET_VERSION = '16';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -91,6 +91,11 @@ function gp_logo(): string
 function gp_header(string $titleKey, string $extraTitle = ''): void
 {
     $home = (string)gp_setting('home_url');
+    // Pages are always re-checked by the browser, so after an update they point to the new
+    // CSS/JS files (those are versioned with GP_ASSET_VERSION and can stay cached).
+    if (!headers_sent()) {
+        header('Cache-Control: no-cache, must-revalidate');
+    }
     ?><!doctype html>
 <html lang="fr">
 <head>
