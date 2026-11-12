@@ -18,7 +18,7 @@ function gp_settings_defaults(): array
         'tagline'        => ['fr' => '', 'en' => ''],
         'footer_text'    => ['fr' => '', 'en' => ''],
         'default_lang'   => 'auto',                      // auto (from the browser) | fr | en
-        'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true, 'whoofus' => true, 'wouldrather' => true, 'drawguess' => true],
+        'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true, 'whoofus' => true, 'wouldrather' => true, 'drawguess' => true, 'mystery' => true],
         'home_url'       => (string)($cfg['home_url'] ?? ''),
         'home_label'     => '',
         'poll_ms'        => 2000,
@@ -124,6 +124,7 @@ function gp_public_config(): array
         'lang'         => $s['default_lang'],
         'pollMs'       => max(1000, min(6000, (int)$s['poll_ms'])),
         'reactionsOn'  => (bool)$s['reactions_on'],
+        'games'        => array_values(array_filter(array_keys(gp_games()), 'gp_game_enabled')),
         'reactions'    => array_values($s['reactions'] ?: []),
     ];
 }

@@ -16,6 +16,7 @@ const GP_PROMPT_TYPES = [
     'who'   => 'Qui de nous / Which of us',
     'wyr'   => 'Tu préfères / Would you rather',
     'word'  => 'Mot à dessiner / Word to draw',
+    'mystery' => 'Mot mystère / Mystery word',
 ];
 
 function gp_prompts_ensure_table(): void

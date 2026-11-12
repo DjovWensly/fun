@@ -106,9 +106,12 @@ class TicTacToe extends GameEngine
             $state['winner'] = $seat;
             $state['line'] = $line;
             $state['scores'][$seat]++;
+            $other = self::nextInOrder($state['seats'], $seat);
+            self::announce($state, [$seat], [[[$seat], $state['scores'][$seat]], [[$other], $state['scores'][$other]]], 'wins');
         } elseif ($state['moves'] >= $n) {
             $state['over'] = true;
             $state['scores']['draw']++;
+            self::announce($state, [], [[[$state['seats'][0]], $state['scores'][$state['seats'][0]]], [[$state['seats'][1]], $state['scores'][$state['seats'][1]]]], 'wins', true);
         } else {
             $state['turn'] = self::nextInOrder($state['seats'], $seat);
         }

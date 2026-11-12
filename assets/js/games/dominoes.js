@@ -9,7 +9,7 @@
   function half(n) {
     var cells = [];
     for (var i = 1; i <= 9; i++) cells.push(h('i', { class: PIPS[n].indexOf(i) >= 0 ? 'pip' : '' }));
-    return h('span', { class: 'half' }, cells);
+    return h('span', { class: 'half n' + n }, cells); // nN lets the 'coloured dots' style colour each number
   }
 
   /** A domino. dir: 'v' (vertical) or 'h' (horizontal). size: half size in px (optional). */
@@ -62,11 +62,15 @@
     return t('team_n', { n: idx + 1 }) + ' (' + names.join(' & ') + ')';
   }
 
+  var heard = { round: null, len: 0 };
   function update(g, c) {
     ctx = c;
     state = g;
     var you = ctx.you();
     var myTurn = g.phase === 'playing' && g.turn === you;
+    // "clac" each time a tile lands on the table
+    if (heard.round === g.round && g.chain.length > heard.len) if (GP.sound) GP.sound.play('clack');
+    heard = { round: g.round, len: g.chain.length };
 
     renderScores(g);
 

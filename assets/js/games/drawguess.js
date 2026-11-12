@@ -324,7 +324,16 @@
     });
   }
 
+  var heardChat = null;
   function renderChat() {
+    // a sound for each new "found" (and for my own "so close")
+    if (heardChat !== null && g.chat.length > heardChat) {
+      g.chat.slice(heardChat).forEach(function (m) {
+        if (m.kind === 'found') if (GP.sound) GP.sound.play(m.seat === ctx.you() ? 'win' : 'ding');
+        if (m.kind === 'close') if (GP.sound) GP.sound.play('tick');
+      });
+    }
+    heardChat = g.chat.length;
     els.chat.innerHTML = '';
     g.chat.forEach(function (m) {
       var who = m.seat !== undefined ? ctx.name(m.seat) : '';

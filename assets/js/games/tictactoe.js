@@ -38,10 +38,13 @@
     return el;
   }
 
+  var heardMoves = null;
   function update(g, c) {
     ctx = c;
     state = g;
     var you = ctx.you();
+    if (heardMoves !== null && (g.moves || 0) > heardMoves) if (GP.sound) GP.sound.play('tick');
+    heardMoves = g.moves || 0;
     var myTurn = !g.over && g.turn === you;
     var size = g.size || 3;
     var big = size > 3;

@@ -11,12 +11,20 @@ no build step) so it runs on free shared hosting like **InfinityFree**.
 | **Qui de nous deux ? / Which of us?** | 2+ | A question appears (“…cuisine le mieux ?”), everyone secretly picks a player, then the answers are revealed. Two players get a *complicité* score; in a group the most-picked player scores |
 | **Tu préfères… ? / Would you rather…?** | 2+ | Two choices, everyone votes in secret, then you see who picked what and how often the table agrees |
 | **Dessine et devine / Draw & guess** | 2–10 | Each player draws a word (picked from 3) while the others type guesses. Timer, letter hints at half and three-quarter time, points for speed, “so close!” hints, players can join mid-game |
+| **Mot mystère / Mystery word** | 1–8 | Find a hidden 5-, 6- or 7-letter word in 6 tries (right place / elsewhere / absent). Alone, or racing the table on the same word; you see the others' marks but not their letters. Optional first letter, FR/EN words editable in the admin (type **mystery**) |
 
 During a game, the round button in the bottom corner sends a **reaction**: 8 emoji and 6 quick phrases
 (“Bien joué !”, “Oups…”, “On en refait une ?”…). It pops up as a bubble over your name on everyone's screen,
 in the player's own language. Each player can mute other people's reactions.
 
 The interface is in **French and English** (FR/EN switch at the top).
+
+## At the table
+
+- **Switch game, same players**: the host picks another game (Settings window included) and everyone moves to it, no new code needed. Bots leave if the new game has none.
+- **Spectators**: anyone with the link can **watch** a game, even when it has started or the table is full, send reactions, and **take a seat** when the game allows it.
+- **Tonight's results**: every finished match (dominoes, tic-tac-toe, draw & guess, mystery word) is recorded with the players' names, with a wins tally, and survives game switches.
+- **Look and sound** (button *Apparence*): sounds and vibration on/off, domino style (classic, coloured dots, night, red dots), table colour (green, blue, burgundy, black, light wood) and tic-tac-toe paper (squared, yellow notepad, blackboard). Stored on each device.
 
 ## How playing together works
 
@@ -165,6 +173,9 @@ room.php             the room page (waiting room + game)
 local.php            Truth or Dare on a single phone (no database)
 check.php            setup check (PHP, config, database, tables, API)
 img/                 favicon.ico and apple-touch-icon.png (replace with your own)
+assets/js/options.js settings window for each game (home page and "switch game")
+assets/js/sound.js   sounds made with Web Audio (no audio files)
+assets/js/look.js    "Apparence" panel (domino style, table colour, sound)
 api.php              JSON API: create, join, state (polling), start, add_bot, kick, leave, move, lobby, prompts
 install.sql          database tables (gp_rooms, gp_players)
 config.sample.php    copy to config.php

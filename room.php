@@ -35,6 +35,7 @@ gp_header('site_title', $code);
       </button>
     </div>
     <div class="row">
+      <button type="button" class="btn small ghost" id="look-btn" data-i18n="look_btn"></button>
       <button type="button" class="btn small" id="share-btn" data-i18n="share" hidden></button>
       <button type="button" class="btn small ghost" id="leave-btn" data-i18n="leave" hidden></button>
     </div>
@@ -45,12 +46,19 @@ gp_header('site_title', $code);
   <!-- shown when this browser is not (yet) a player in the room -->
   <section class="panel" id="join-section" hidden>
     <h2 data-i18n="join_this"></h2>
-    <form id="room-join-form" class="row">
+    <form id="room-join-form" class="row wrap-row">
       <input id="room-join-name" maxlength="20" autocomplete="nickname" data-i18n-ph="name_ph" required>
-      <button class="btn primary" type="submit" data-i18n="join"></button>
+      <button class="btn primary" type="submit" id="join-play-btn" data-i18n="join"></button>
+      <button class="btn" type="button" id="join-watch-btn" data-i18n="watch"></button>
     </form>
     <p class="muted" id="join-blocked" hidden></p>
   </section>
+
+  <!-- shown to spectators -->
+  <div class="spectator-bar" id="spectator-bar" hidden>
+    <span data-i18n="you_watch"></span>
+    <button type="button" class="btn small" id="sit-btn" data-i18n="take_seat" hidden></button>
+  </div>
 
   <!-- waiting room -->
   <section id="lobby-section" class="lobby-grid" hidden>
@@ -70,9 +78,11 @@ gp_header('site_title', $code);
       <ul class="player-list" id="lobby-players"></ul>
       <div class="row wrap-row" id="host-controls" hidden>
         <button type="button" class="btn" id="add-bot-btn" data-i18n="add_bot"></button>
+        <button type="button" class="btn" id="switch-btn-lobby" data-i18n="switch_game"></button>
         <button type="button" class="btn primary" id="start-btn" data-i18n="start"></button>
       </div>
       <p class="muted" id="lobby-hint"></p>
+      <div class="spectators" id="lobby-spectators" hidden></div>
     </div>
   </section>
 
@@ -82,7 +92,18 @@ gp_header('site_title', $code);
   <details class="panel host-menu" id="host-menu" hidden>
     <summary data-i18n="manage_table"></summary>
     <ul class="player-list" id="game-players"></ul>
-    <button type="button" class="btn small" id="back-lobby-btn" data-i18n="back_lobby"></button>
+    <div class="spectators" id="game-spectators" hidden></div>
+    <div class="row wrap-row">
+      <button type="button" class="btn small" id="switch-btn-game" data-i18n="switch_game"></button>
+      <button type="button" class="btn small" id="back-lobby-btn" data-i18n="back_lobby"></button>
+    </div>
+  </details>
+
+  <!-- results of every game played at this table tonight -->
+  <details class="panel history" id="history" hidden>
+    <summary><span data-i18n="history"></span> <span class="muted" id="history-count"></span></summary>
+    <div id="history-tally" class="history-tally"></div>
+    <ul id="history-list" class="history-list"></ul>
   </details>
 
   <p class="center muted" id="loading" data-i18n="loading"></p>
@@ -94,6 +115,9 @@ gp_header('site_title', $code);
 <script src="<?= gp_h($dep) ?>?v=<?= GP_ASSET_VERSION ?>"></script>
 <?php endforeach; ?>
 <script src="assets/js/games/<?= gp_h($game) ?>.js?v=<?= GP_ASSET_VERSION ?>"></script>
+<script src="assets/js/options.js?v=<?= GP_ASSET_VERSION ?>"></script>
+<script src="assets/js/sound.js?v=<?= GP_ASSET_VERSION ?>"></script>
+<script src="assets/js/look.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <script src="assets/js/emotes.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <script src="assets/js/room.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <?php gp_footer(); ?>

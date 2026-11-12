@@ -107,6 +107,23 @@ class DrawGuess extends GameEngine
             if ($state['round'] > $state['opts']['rounds'] || !$state['order']) {
                 $state['round'] = $state['opts']['rounds'];
                 $state['phase'] = 'over';
+                $ranking = [];
+                foreach ($state['order'] as $s) {
+                    $ranking[] = [[$s], (int)($state['scores'][$s] ?? 0)];
+                }
+                usort($ranking, function ($a, $b) {
+                    return $b[1] <=> $a[1];
+                });
+                if ($ranking) {
+                    $top = $ranking[0][1];
+                    $winners = [];
+                    foreach ($ranking as $r) {
+                        if ($r[1] === $top) {
+                            $winners[] = $r[0][0];
+                        }
+                    }
+                    self::announce($state, $winners, $ranking);
+                }
                 $state['drawer'] = null;
                 $state['endsAt'] = 0;
                 return;

@@ -35,9 +35,12 @@
       return seats.map(function (s) { var p = ctx.player(s); return p ? p.name : '?'; }).join(', ');
     }
 
+    var heardPhase = null;
     function update(g, c) {
       ctx = c;
       var you = ctx.you();
+      if (heardPhase === 'vote' && g.phase === 'reveal') if (GP.sound) GP.sound.play(g.agree ? 'ding' : 'pop');
+      heardPhase = g.phase;
       var done = g.round - (g.phase === 'vote' ? 1 : 0);
       els.label.textContent = t('round_n', { n: g.round });
 

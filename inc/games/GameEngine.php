@@ -62,6 +62,15 @@ abstract class GameEngine
     {
     }
 
+    /**
+     * Announce a result for the evening history (api.php stores it with the players' names).
+     * winners: seats; ranking: [[seats, score], ...] best first.
+     */
+    protected static function announce(array &$state, array $winners, array $ranking, string $unit = 'points', bool $draw = false): void
+    {
+        $state['_events'][] = ['winners' => array_values($winners), 'ranking' => $ranking, 'unit' => $unit, 'draw' => $draw];
+    }
+
     protected static function nextInOrder(array $order, int $seat): int
     {
         $i = array_search($seat, $order, true);

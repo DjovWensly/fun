@@ -148,6 +148,7 @@ require_once __DIR__ . '/games/PollGame.php';
 require_once __DIR__ . '/games/WhoOfUs.php';
 require_once __DIR__ . '/games/WouldRather.php';
 require_once __DIR__ . '/games/DrawGuess.php';
+require_once __DIR__ . '/games/Mystery.php';
 
 /** Registry of available games. To add a game: write an engine + a JS file, then register it here. */
 function gp_games(): array
@@ -159,6 +160,7 @@ function gp_games(): array
         'whoofus'   => new WhoOfUs(),
         'wouldrather' => new WouldRather(),
         'drawguess' => new DrawGuess(),
+        'mystery'   => new Mystery(),
     ];
 }
 

@@ -222,6 +222,7 @@ function gp_admin_settings_page(string $csrf): void
         'whoofus'     => 'Which of us? / Qui de nous deux ?',
         'wouldrather' => 'Would you rather? / Tu préfères… ?',
         'drawguess'   => 'Draw & guess / Dessine et devine',
+        'mystery'     => 'Mystery word / Mot mystère',
     ];
     ?>
   <form method="post" class="settings-form">

@@ -427,6 +427,13 @@ class Dominoes extends GameEngine
         if ($board[$top] >= $state['target']) {
             $state['phase'] = 'match_over';
             $state['winner'] = $top; // a side id
+            $ranking = [];
+            foreach ($board as $side => $value) {
+                $ranking[] = [array_keys(array_filter($state['sideOf'], function ($sd) use ($side) {
+                    return (int)$sd === (int)$side;
+                })), $value];
+            }
+            self::announce($state, $ranking[0][0], $ranking, $state['goal'] === 'rounds' ? 'rounds' : 'points');
         }
     }
 

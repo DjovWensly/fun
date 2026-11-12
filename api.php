@@ -24,6 +24,8 @@ const GP_ONLINE_SECONDS = 20;   // a player not seen for this long is shown as o
 // Allowed pen colours and sizes in Dessine et devine (must match assets/js/games/drawguess.js).
 const GP_DRAW_COLORS = ['#1c1915', '#ffffff', '#c4381d', '#1f4592', '#2f7d4f', '#e3a21a', '#7b4a22', '#e85d9a', '#8a8a8a', '#7a3fc0'];
 const GP_DRAW_WIDTHS = [4, 8, 16, 32];
+// Spectators are stored with the players but on seats from 100 up, so games never see them.
+const GP_SPECTATOR_SEAT = 100;
 const GP_BOT_DELAY = 1;         // seconds between bot moves so humans can follow the game
 
 function out(array $data, int $code = 200): void
@@ -57,6 +59,8 @@ try {
             out(actionCreate($in));
         case 'join':
             out(actionJoin($in));
+        case 'watch':
+            out(actionWatch($in));
         case 'state':
             out(actionState($in));
         case 'emote':
@@ -69,6 +73,8 @@ try {
         case 'leave':
         case 'move':
         case 'lobby':
+        case 'switch_game':
+        case 'sit':
             out(actionMutate($action, $in));
         default:
             throw new GameError('unknown_action');
@@ -158,9 +164,11 @@ function loadRoom(string $code, bool $lock): array
     return $room;
 }
 
-function loadPlayers(int $roomId): array
+
+/** Players at the table (seat => row). Pass $spectators = true to get the spectators instead. */
+function loadPlayers(int $roomId, bool $spectators = false): array
 {
-    $st = gp_db()->prepare('SELECT * FROM gp_players WHERE room_id = ? ORDER BY seat');
+    $st = gp_db()->prepare('SELECT * FROM gp_players WHERE room_id = ? AND seat ' . ($spectators ? '>=' : '<') . ' ' . GP_SPECTATOR_SEAT . ' ORDER BY seat');
     $st->execute([$roomId]);
     $out = [];
     foreach ($st->fetchAll() as $p) {
@@ -206,6 +214,11 @@ function insertPlayer(int $roomId, string $name, int $seat, bool $bot, bool $hos
 
 function saveRoom(array $room): void
 {
+    // Results announced by the game (a match won, a word found…) go to the evening history.
+    if (is_array($room['state']) && !empty($room['state']['_events'])) {
+        saveHistory($room, $room['state']['_events']);
+        unset($room['state']['_events']);
+    }
     gp_db()->prepare('UPDATE gp_rooms SET status = ?, state = ?, version = version + 1, updated_at = ? WHERE id = ?')
         ->execute([
             $room['status'],
@@ -251,6 +264,7 @@ function actionCreate(array $in): array
     $ttl = max(1, (int)gp_setting('room_ttl_hours'));
     $db->prepare('DELETE FROM gp_rooms WHERE updated_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - $ttl * 3600)]);
 
+    ensureHistoryTable(); // before the transaction (see saveHistory)
     $db->beginTransaction();
     $code = newCode();
     $now = gp_now();
@@ -259,8 +273,10 @@ function actionCreate(array $in): array
     $roomId = (int)$db->lastInsertId();
     $token = insertPlayer($roomId, $name, 0, false, true);
 
-    if ($bots > 0) {
-        // Solo mode: fill the table with bots and start right away.
+    // Solo: games that can be played alone (Mot mystère) start right away.
+    $soloStart = !empty($in['solo']) && $meta['min'] <= 1;
+    if ($bots > 0 || $soloStart) {
+        // Solo mode: fill the table with bots (if any) and start right away.
         for ($i = 1; $i <= $bots; $i++) {
             insertPlayer($roomId, botName(loadPlayers($roomId)), $i, true, false);
         }
@@ -297,6 +313,31 @@ function actionJoin(array $in): array
     if ($room['status'] === 'playing') {
         $engine->addSeat($room['state'], $seat);
     }
+    saveRoom($room);
+    $db->commit();
+    return ['ok' => true, 'code' => $code, 'token' => $token];
+}
+
+/** Sit next to the table as a spectator: always allowed, even when the game has started or the table is full. */
+function actionWatch(array $in): array
+{
+    $code = cleanCode($in['code'] ?? '');
+    $name = cleanName($in['name'] ?? '');
+    $db = gp_db();
+    $db->beginTransaction();
+    $room = loadRoom($code, true);
+    if ($room['status'] === 'closed') {
+        throw new GameError('room_closed');
+    }
+    $spectators = loadPlayers((int)$room['id'], true);
+    if (count($spectators) >= 30) {
+        throw new GameError('room_full');
+    }
+    $seat = GP_SPECTATOR_SEAT;
+    while (isset($spectators[$seat])) {
+        $seat++;
+    }
+    $token = insertPlayer((int)$room['id'], $name, $seat, false, false);
     saveRoom($room);
     $db->commit();
     return ['ok' => true, 'code' => $code, 'token' => $token];
@@ -359,7 +400,7 @@ function actionState(array $in): array
     if ($since > 0 && (int)$room['version'] === $since) {
         return ['ok' => true, 'same' => true, 'presence' => $presence] + $emotes;
     }
-    return snapshot($room, $players, findMe($players, $token)) + $emotes;
+    return snapshot($room, $players, findMe($players, $token) ?? findMe(loadPlayers((int)$room['id'], true), $token)) + $emotes;
 }
 
 // --- reactions (emotes) ----------------------------------------------------------------------
@@ -415,7 +456,8 @@ function actionEmote(array $in): array
     }
     $room = loadRoom(cleanCode($in['code'] ?? ''), false);
     $players = loadPlayers((int)$room['id']);
-    $me = findMe($players, (string)($in['token'] ?? ''));
+    $token = (string)($in['token'] ?? '');
+    $me = findMe($players, $token) ?? findMe(loadPlayers((int)$room['id'], true), $token);
     if (!$me) {
         throw new GameError('not_in_room');
     }
@@ -531,6 +573,76 @@ function actionDraw(array $in): array
     return ['ok' => true, 'id' => $id];
 }
 
+// --- evening history -----------------------------------------------------------------------
+
+function ensureHistoryTable(): void
+{
+    gp_db()->exec("CREATE TABLE IF NOT EXISTS gp_history (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        room_id INT UNSIGNED NOT NULL,
+        game VARCHAR(20) NOT NULL,
+        data TEXT NOT NULL,
+        created_at DATETIME NOT NULL,
+        PRIMARY KEY (id),
+        KEY idx_room (room_id, id),
+        CONSTRAINT fk_history_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+}
+
+/**
+ * Store results with the players' names (seats change between games, names are what people remember).
+ * Event: ['winners' => [seat...], 'ranking' => [[[seat...], score], ...], 'unit' => 'points'|'rounds'|..., 'draw' => bool]
+ */
+function saveHistory(array $room, array $events): void
+{
+    $players = loadPlayers((int)$room['id']);
+    $names = function (array $seats) use ($players): array {
+        $out = [];
+        foreach ($seats as $s) {
+            $out[] = $players[(int)$s]['name'] ?? '?';
+        }
+        return $out;
+    };
+    // No CREATE TABLE here: we are inside a transaction and MySQL would commit it early.
+    // The table is created when a table is opened (actionCreate) and by install.sql.
+    try {
+        $ins = gp_db()->prepare('INSERT INTO gp_history (room_id, game, data, created_at) VALUES (?,?,?,?)');
+    } catch (PDOException $e) {
+        return;
+    }
+    foreach ($events as $e) {
+        $data = [
+            'winners' => $names($e['winners'] ?? []),
+            'draw'    => !empty($e['draw']),
+            'unit'    => $e['unit'] ?? 'points',
+            'ranking' => array_map(function ($r) use ($names) {
+                return [$names((array)$r[0]), $r[1]];
+            }, $e['ranking'] ?? []),
+            'note'    => $e['note'] ?? null,
+        ];
+        try {
+            $ins->execute([$room['id'], $room['game'], json_encode($data, JSON_UNESCAPED_UNICODE), gp_now()]);
+        } catch (PDOException $ex) {
+            return; // table missing: the game goes on without history
+        }
+    }
+}
+
+function loadHistory(int $roomId): array
+{
+    try {
+        $st = gp_db()->prepare('SELECT id, game, data, created_at FROM gp_history WHERE room_id = ? ORDER BY id DESC LIMIT 40');
+        $st->execute([$roomId]);
+        $out = [];
+        foreach ($st->fetchAll() as $r) {
+            $out[] = ['id' => (int)$r['id'], 'game' => $r['game'], 'at' => strtotime($r['created_at'] . ' UTC')] + (json_decode($r['data'], true) ?: []);
+        }
+        return $out;
+    } catch (PDOException $e) {
+        return []; // table not created yet: no game finished so far
+    }
+}
+
 function isOnline(array $p): bool
 {
     return $p['is_bot'] || strtotime($p['last_seen'] . ' UTC') >= time() - GP_ONLINE_SECONDS;
@@ -539,6 +651,11 @@ function isOnline(array $p): bool
 function snapshot(array $room, array $players, ?array $me): array
 {
     $engine = gp_engine($room['game']);
+    $spectators = [];
+    foreach (loadPlayers((int)$room['id'], true) as $p) {
+        $spectators[] = ['seat' => $p['seat'], 'name' => $p['name'], 'online' => isOnline($p)];
+    }
+    $isSpectator = $me !== null && $me['seat'] >= GP_SPECTATOR_SEAT;
     $list = [];
     foreach ($players as $p) {
         $list[] = [
@@ -549,7 +666,7 @@ function snapshot(array $room, array $players, ?array $me): array
             'online' => isOnline($p),
         ];
     }
-    $mySeat = $me ? $me['seat'] : null;
+    $mySeat = $me && !$isSpectator ? $me['seat'] : null;
     return [
         'ok'      => true,
         'room'    => [
@@ -561,8 +678,11 @@ function snapshot(array $room, array $players, ?array $me): array
             'meta'    => $engine->meta(),
         ],
         'players' => $list,
+        'spectators' => $spectators,
         'you'     => $mySeat,
-        'isHost'  => $me ? $me['is_host'] : false,
+        'watching' => $isSpectator ? $me['seat'] : null,
+        'isHost'  => $me && !$isSpectator ? $me['is_host'] : false,
+        'history' => loadHistory((int)$room['id']),
         'game'    => $room['status'] === 'playing' ? $engine->view($room['state'], $mySeat) : null,
     ];
 }
@@ -577,15 +697,77 @@ function actionMutate(string $action, array $in): array
     try {
         $room = loadRoom($code, true);
         $players = loadPlayers((int)$room['id']);
+        $spectators = loadPlayers((int)$room['id'], true);
         $me = findMe($players, $token);
-        if (!$me) {
-            throw new GameError('not_in_room');
-        }
         $engine = gp_engine($room['game']);
         $meta = $engine->meta();
+
+        // Spectators can only leave, or take a free seat when the game allows it.
+        if (!$me) {
+            $watcher = findMe($spectators, $token);
+            if (!$watcher) {
+                throw new GameError('not_in_room');
+            }
+            if ($action === 'leave') {
+                $db->prepare('DELETE FROM gp_players WHERE id = ?')->execute([$watcher['id']]);
+            } elseif ($action === 'sit') {
+                if ($room['status'] === 'playing' && !$meta['joinMidGame']) {
+                    throw new GameError('game_started');
+                }
+                if (count($players) >= $meta['max']) {
+                    throw new GameError('room_full');
+                }
+                $seat = freeSeat($players);
+                $db->prepare('UPDATE gp_players SET seat = ? WHERE id = ?')->execute([$seat, $watcher['id']]);
+                if ($room['status'] === 'playing') {
+                    $engine->addSeat($room['state'], $seat);
+                }
+            } else {
+                throw new GameError('spectator');
+            }
+            saveRoom($room);
+            $db->commit();
+            if ($action === 'leave') {
+                return ['ok' => true, 'left' => true];
+            }
+            $room = loadRoom($code, false);
+            $players = loadPlayers((int)$room['id']);
+            return snapshot($room, $players, findMe($players, $token));
+        }
         $isHost = $me['is_host'];
 
         switch ($action) {
+            case 'sit':
+                throw new GameError('invalid_move');
+
+            case 'switch_game': // same table, same players, another game
+                if (!$isHost) {
+                    throw new GameError('host_only');
+                }
+                $game = (string)($in['game'] ?? '');
+                $next = gp_engine($game);
+                if (!gp_game_enabled($game)) {
+                    throw new GameError('game_disabled');
+                }
+                $nextMeta = $next->meta();
+                if (!$nextMeta['bots']) {
+                    foreach ($players as $seat => $p) {
+                        if ($p['is_bot']) {
+                            $db->prepare('DELETE FROM gp_players WHERE id = ?')->execute([$p['id']]);
+                            unset($players[$seat]);
+                        }
+                    }
+                }
+                if (count($players) > $nextMeta['max']) {
+                    throw new GameError('too_many_players');
+                }
+                $options = $next->options(is_array($in['options'] ?? null) ? $in['options'] : []);
+                $db->prepare('UPDATE gp_rooms SET game = ?, options = ? WHERE id = ?')
+                    ->execute([$game, json_encode($options, JSON_UNESCAPED_UNICODE), $room['id']]);
+                $room['status'] = 'lobby';
+                $room['state'] = null;
+                break;
+
             case 'start':
                 if (!$isHost) {
                     throw new GameError('host_only');
@@ -622,6 +804,10 @@ function actionMutate(string $action, array $in): array
                     throw new GameError('host_only');
                 }
                 $seat = (int)($in['seat'] ?? -1);
+                if (isset($spectators[$seat])) {
+                    $db->prepare('DELETE FROM gp_players WHERE id = ?')->execute([$spectators[$seat]['id']]);
+                    break;
+                }
                 if (!isset($players[$seat]) || $seat === $me['seat']) {
                     throw new GameError('invalid_move');
                 }

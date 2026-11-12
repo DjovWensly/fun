@@ -142,7 +142,7 @@
     r.emotes.forEach(function (e) {
       if (mine[e.id]) { delete mine[e.id]; return; }
       if (e.seat === opts.you()) return; // sent from another tab of mine
-      if (!muted) show(e.seat, e.emote);
+      if (!muted) { show(e.seat, e.emote); if (GP.sound) GP.sound.play('pop'); }
     });
   }
 

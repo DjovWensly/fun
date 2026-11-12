@@ -42,7 +42,7 @@ gp_header('site_title');
           <p class="players-count" data-min="<?= $meta['min'] ?>" data-max="<?= $meta['max'] ?>"></p>
           <div class="row wrap-row">
             <button class="btn primary" data-create="<?= gp_h($id) ?>" data-i18n="create_room"></button>
-            <?php if ($meta['bots']): ?>
+            <?php if ($meta['bots'] || $meta['min'] <= 1): ?>
               <button class="btn" data-solo="<?= gp_h($id) ?>" data-i18n="solo_bots"></button>
             <?php endif; ?>
             <?php if ($id === 'truthdare'): ?>
@@ -55,17 +55,8 @@ gp_header('site_title');
   </section>
 </main>
 
-<dialog id="options-dialog">
-  <form method="dialog" id="options-form">
-    <h2 id="options-title"></h2>
-    <div id="options-fields"></div>
-    <div class="row end">
-      <button class="btn ghost" value="cancel" data-i18n="cancel"></button>
-      <button class="btn primary" value="ok" id="options-ok" data-i18n="create"></button>
-    </div>
-  </form>
-</dialog>
 
 <script src="assets/js/common.js?v=<?= GP_ASSET_VERSION ?>"></script>
+<script src="assets/js/options.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <script src="assets/js/home.js?v=<?= GP_ASSET_VERSION ?>"></script>
 <?php gp_footer(); ?>

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '12';
+const GP_ASSET_VERSION = '14';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -58,6 +58,15 @@ function gp_catalog(): array
                 . '<rect x="8" y="18" width="34" height="54" rx="5" fill="#1f4592" stroke="#14110d" stroke-width="2"/>'
                 . '<rect x="48" y="18" width="34" height="54" rx="5" fill="#c4381d" stroke="#14110d" stroke-width="2"/>'
                 . '<text x="25" y="53" text-anchor="middle" font-size="22" fill="#fff">A</text><text x="65" y="53" text-anchor="middle" font-size="22" fill="#fff">B</text></svg>',
+        ],
+        'mystery' => [
+            'art_class' => 'art-mystery',
+            'art' => '<svg viewBox="0 0 90 90" width="86" height="86" aria-hidden="true" font-family="Archivo, Arial, sans-serif" font-weight="900" font-size="15" text-anchor="middle">'
+                . '<g stroke="#14110d" stroke-width="2">'
+                . '<rect x="8" y="22" width="22" height="22" rx="3" fill="#2f7d4f"/><rect x="34" y="22" width="22" height="22" rx="11" fill="#e3a21a"/><rect x="60" y="22" width="22" height="22" rx="3" fill="#d9ccb4"/>'
+                . '<rect x="8" y="50" width="22" height="22" rx="3" fill="#fffaf0"/><rect x="34" y="50" width="22" height="22" rx="3" fill="#fffaf0"/><rect x="60" y="50" width="22" height="22" rx="3" fill="#fffaf0"/></g>'
+                . '<text x="19" y="38" fill="#fff">M</text><text x="45" y="38" fill="#14110d">O</text><text x="71" y="38" fill="#14110d">T</text>'
+                . '<text x="45" y="66" fill="#14110d">?</text></svg>',
         ],
         'drawguess' => [
             'art_class' => 'art-paper',

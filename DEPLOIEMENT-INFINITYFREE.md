@@ -66,7 +66,7 @@ L'hôte n'est **jamais** `localhost` sur InfinityFree.
 2. Dans phpMyAdmin, clique sur le nom de ta base à gauche.
 3. Onglet **Importer** → choisis le fichier **`install.sql`** (dans le dossier décompressé) → **Exécuter**.
 
-Tu dois voir 6 tables : `gp_rooms`, `gp_players`, `gp_prompts`, `gp_emotes`, `gp_settings`, `gp_strokes`.
+Tu dois voir 7 tables : `gp_rooms`, `gp_players`, `gp_prompts`, `gp_emotes`, `gp_settings`, `gp_strokes`, `gp_history`.
 Si l'import échoue, ce n'est pas bloquant : `check.php` (étape 7) a un bouton qui crée les
 tables principales, et les autres se créent toutes seules au premier usage.
 
@@ -223,6 +223,8 @@ Lien direct pour rejoindre une table avec un code : `https://fun.gamer.gd/index.
    `inc/layout.php` doit avoir changé (il l'est dans les versions que je te prépare) ;
    sinon les téléphones peuvent garder l'ancienne version. En cas de doute : Ctrl+F5.
 4. Les nouvelles tables éventuelles se créent toutes seules ; `check.php` te dira s'il manque quelque chose.
+   (Si tu as déjà mis le site en ligne avant l'historique de la soirée, tu peux aussi réimporter
+   `install.sql` dans phpMyAdmin : c'est sans risque, il ne crée que ce qui manque.)
 
 ---
 

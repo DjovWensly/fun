@@ -85,9 +85,12 @@
     ]));
   }
 
+  var heardCount = null;
   function update(g, c) {
     ctx = c;
     var you = ctx.you();
+    if (heardCount !== null && g.count > heardCount) if (GP.sound) GP.sound.play('pop');
+    heardCount = g.count;
     var isTurn = g.turn === you;
     els.card.innerHTML = '';
     els.card.appendChild(tdCard({

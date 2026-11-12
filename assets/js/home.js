@@ -51,135 +51,17 @@
     });
   });
 
-  // ----- settings dialog -----
-  var dialog = document.getElementById('options-dialog');
-  var fieldsBox = document.getElementById('options-fields');
-  var pending = null;
-
-  /** A row of tap-to-pick choices. choices: [[value, label, help?], ...] */
-  function choices(name, label, list, value, onChange) {
-    var help = h('p', { class: 'choice-help' });
-    var box = h('div', { class: 'choices', role: 'radiogroup' });
-    list.forEach(function (c) {
-      var input = h('input', { type: 'radio', name: name, value: String(c[0]), checked: String(c[0]) === String(value) });
-      input.addEventListener('change', function () {
-        help.textContent = c[2] || '';
-        if (onChange) onChange(String(c[0]));
-      });
-      if (String(c[0]) === String(value)) help.textContent = c[2] || '';
-      box.appendChild(h('label', null, [input, h('span', null, c[1])]));
-    });
-    var hasHelp = list.some(function (c) { return c[2]; });
-    return h('div', { class: 'field', 'data-field': name }, [h('span', null, label), box, hasHelp ? help : null]);
-  }
-
-  function val(name) {
-    var el = fieldsBox.querySelector('input[name="' + name + '"]:checked');
-    return el ? el.value : null;
-  }
-
-  function goalChoices(mode) {
-    var pts = mode === 'fives' ? [100, 150, 250] : [50, 100, 150];
-    return pts.map(function (n) { return ['points:' + n, t('goal_points', { n: n })]; })
-      .concat([3, 5, 7].map(function (n) { return ['rounds:' + n, t('goal_rounds', { n: n })]; }));
-  }
-
-  function buildFields(game, solo) {
-    fieldsBox.innerHTML = '';
-    if (game === 'dominoes') {
-      var goalHolder = h('div');
-      var renderGoal = function (mode) {
-        goalHolder.innerHTML = '';
-        goalHolder.appendChild(choices('goal', t('opt_goal'), goalChoices(mode), mode === 'fives' ? 'points:150' : 'points:100'));
-      };
-      fieldsBox.appendChild(choices('mode', t('opt_mode'), [
-        ['draw', t('mode_draw'), t('mode_draw_d')],
-        ['block', t('mode_block'), t('mode_block_d')],
-        ['fives', t('mode_fives'), t('mode_fives_d')]
-      ], 'draw', renderGoal));
-      var teams = choices('teams', t('opt_teams'), [['0', t('teams_off')], ['1', t('teams_on')]], '0', function (v) {
-        // Team play needs 4 at the table, so in solo it means 3 bots.
-        if (solo && v === '1') fieldsBox.querySelector('input[name="bots"][value="3"]').checked = true;
-      });
-      fieldsBox.appendChild(teams);
-      if (solo) {
-        fieldsBox.appendChild(choices('bots', t('opt_bots'), [1, 2, 3].map(function (n) { return [n, t('n_bots', { n: n })]; }), 3, function (v) {
-          if (v !== '3') fieldsBox.querySelector('input[name="teams"][value="0"]').checked = true;
-        }));
-      }
-      fieldsBox.appendChild(goalHolder);
-      renderGoal('draw');
-    }
-    if (game === 'tictactoe') {
-      fieldsBox.appendChild(choices('size', t('opt_size'), [[3, t('size_small')]].concat([10, 15, 19, 25].map(function (n) {
-        return [n, t('size_big', { n: n })];
-      })), 3));
-    }
-    if (game === 'whoofus' || game === 'wouldrather') {
-      fieldsBox.appendChild(choices('level', t('opt_level'), [['soft', t('lvl_soft')], ['party', t('lvl_party')]], 'soft'));
-      fieldsBox.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang()));
-    }
-    if (game === 'drawguess') {
-      fieldsBox.appendChild(choices('rounds', t('opt_rounds'), [1, 2, 3, 4].map(function (n) { return [n, n === 1 ? t('round_one') : t('rounds_n', { n: n })]; }), 2));
-      fieldsBox.appendChild(choices('time', t('opt_time'), [60, 80, 100, 120].map(function (n) { return [n, t('secs', { n: n })]; }), 80));
-      fieldsBox.appendChild(choices('level', t('opt_level'), [['soft', t('words_easy')], ['party', t('words_hard')]], 'soft'));
-      fieldsBox.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang()));
-    }
-    if (game === 'truthdare') {
-      fieldsBox.appendChild(choices('level', t('opt_level'), [['soft', t('lvl_soft')], ['party', t('lvl_party')]], 'soft'));
-      fieldsBox.appendChild(choices('order', t('opt_order'), [['circle', t('order_circle')], ['random', t('order_random')]], 'circle'));
-      fieldsBox.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang()));
-    }
-  }
-
-  function collect(game, solo) {
-    var o = {};
-    var bots = 0;
-    if (game === 'dominoes') {
-      o.mode = val('mode');
-      o.teams = val('teams') === '1';
-      var goal = (val('goal') || 'points:100').split(':');
-      o.goal = goal[0];
-      o.target = parseInt(goal[1], 10);
-      if (solo) bots = parseInt(val('bots') || '3', 10);
-    }
-    if (game === 'tictactoe') {
-      o.size = parseInt(val('size') || '3', 10);
-      if (solo) bots = 1;
-    }
-    if (game === 'truthdare') {
-      o.level = val('level'); o.order = val('order'); o.lang = val('lang');
-    }
-    if (game === 'whoofus' || game === 'wouldrather') {
-      o.level = val('level'); o.lang = val('lang');
-    }
-    if (game === 'drawguess') {
-      o.rounds = parseInt(val('rounds') || '2', 10); o.time = parseInt(val('time') || '80', 10);
-      o.level = val('level'); o.lang = val('lang');
-    }
-    return { options: o, bots: bots };
-  }
-
+  // ----- settings window (assets/js/options.js) -----
   function open(game, solo) {
     var name = needName();
     if (!name) return;
-    if (typeof dialog.showModal !== 'function') { send(game, name, {}, solo ? (game === 'dominoes' ? 3 : 1) : 0); return; }
-    pending = { game: game, solo: solo, name: name };
-    document.getElementById('options-title').textContent = t('g_' + game);
-    document.getElementById('options-ok').textContent = solo ? t('play') : t('create');
-    buildFields(game, solo);
-    dialog.showModal();
+    GP.gameOptions.open(game, { solo: solo, always: true, okLabel: solo ? t('play') : t('create') }, function (options, bots) {
+      send(game, name, options, bots, solo);
+    });
   }
 
-  dialog.addEventListener('close', function () {
-    if (dialog.returnValue !== 'ok' || !pending) return;
-    var c = collect(pending.game, pending.solo);
-    send(pending.game, pending.name, c.options, c.bots);
-    pending = null;
-  });
-
-  function send(game, name, options, bots) {
-    GP.api('create', { game: game, name: name, options: options, bots: bots }).then(function (r) {
+  function send(game, name, options, bots, solo) {
+    GP.api('create', { game: game, name: name, options: options, bots: bots, solo: !!solo }).then(function (r) {
       if (r.ok) goToRoom(r.code, r.token);
       else if (!r.silent) GP.toast(GP.errText(r.error), true);
     });

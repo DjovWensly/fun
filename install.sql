@@ -78,3 +78,15 @@ CREATE TABLE IF NOT EXISTS gp_strokes (
   KEY idx_room_turn (room_id, turn, id),
   CONSTRAINT fk_strokes_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Results of finished games, shown as "tonight's results" at each table.
+CREATE TABLE IF NOT EXISTS gp_history (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  room_id     INT UNSIGNED NOT NULL,
+  game        VARCHAR(20)  NOT NULL,
+  data        TEXT         NOT NULL,
+  created_at  DATETIME     NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_room (room_id, id),
+  CONSTRAINT fk_history_room FOREIGN KEY (room_id) REFERENCES gp_rooms (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

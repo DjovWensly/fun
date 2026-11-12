@@ -25,7 +25,8 @@
     call: function (action, data) { return GP.api(action, Object.assign({ code: CODE, token: token }, data || {})); },
     player: function (seat) {
       if (!snap) return null;
-      for (var i = 0; i < snap.players.length; i++) if (snap.players[i].seat === seat) return snap.players[i];
+      var all = snap.players.concat(snap.spectators || []);
+      for (var i = 0; i < all.length; i++) if (all[i].seat === seat) return all[i];
       return null;
     },
     name: function (seat) {
@@ -93,22 +94,27 @@
 
   // ---------- rendering ----------
   function apply(r) {
+    // The host switched the table to another game: reload to get that game's screen.
+    if (r.room.game !== GAME) { stopped = true; location.reload(); return; }
+    var prev = snap;
     snap = r;
     version = r.room.version;
     el('loading').hidden = true;
 
     // A stored token that the server no longer knows (kicked, or room recreated) is useless.
-    if (token && r.you === null) { GP.store(tokenKey, null); token = ''; }
+    if (token && r.you === null && r.watching === null) { GP.store(tokenKey, null); token = ''; }
 
     var member = r.you !== null;
+    var watching = r.watching !== null && r.watching !== undefined;
     var status = r.room.status;
-    el('leave-btn').hidden = !member;
-    GP.emotes.setVisible(member && status !== 'closed');
+    el('leave-btn').hidden = !member && !watching;
+    GP.emotes.setVisible((member || watching) && status !== 'closed');
     el('share-btn').hidden = false;
 
     if (status === 'closed') { showClosed(t('room_closed')); stopped = true; return; }
 
-    renderJoin(member, r);
+    renderJoin(member || watching, r);
+    renderSpectatorBar(watching, r);
     el('lobby-section').hidden = status !== 'lobby';
     el('game-section').hidden = status !== 'playing';
     el('host-menu').hidden = !(status === 'playing' && r.isHost);
@@ -118,8 +124,106 @@
       if (!mounted) { UI.mount(el('game-section'), ctx); mounted = true; }
       UI.update(r.game, ctx);
       renderPlayers(el('game-players'), r, true);
+      renderSpectators(el('game-spectators'), r);
       el('back-lobby-btn').hidden = !r.isHost;
     }
+    renderHistory(r, prev);
+    soundCues(r, prev);
+  }
+
+  /** Sounds that every game shares: your turn, and the end of a game. */
+  function soundCues(r, prev) {
+    if (!GP.sound) return;
+    var g = r.game, you = r.you;
+    var mine = function (s) {
+      var x = s && s.game;
+      if (!x || you === null || x.turn === undefined || x.turn !== you || x.over) return false;
+      return !x.phase || x.phase === 'playing' || x.phase === 'choose' || x.phase === 'vote';
+    };
+    if (prev && mine(r) && !mine(prev)) { GP.sound.play('turn'); GP.sound.vibrate(120); }
+    var top = r.history && r.history[0];
+    var before = prev && prev.history && prev.history[0];
+    if (prev && top && (!before || top.id !== before.id)) {
+      var me = r.you !== null && ctx.player(r.you) ? ctx.player(r.you).name : null;
+      GP.sound.play(me && top.winners.indexOf(me) >= 0 ? 'win' : 'end');
+    }
+  }
+
+  // ---------- spectators ----------
+  function renderSpectatorBar(watching, r) {
+    el('spectator-bar').hidden = !watching;
+    if (!watching) return;
+    var meta = r.room.meta;
+    var canSit = (r.room.status === 'lobby' || meta.joinMidGame) && r.players.length < meta.max;
+    el('sit-btn').hidden = !canSit;
+  }
+
+  function renderSpectators(box, r) {
+    var list = r.spectators || [];
+    box.hidden = !list.length;
+    box.innerHTML = '';
+    if (!list.length) return;
+    box.appendChild(h('span', { class: 'label' }, t('spectators') + ' (' + list.length + ')'));
+    var row = h('div', { class: 'spectator-list' });
+    list.forEach(function (sp) {
+      row.appendChild(h('span', { class: 'tag' + (sp.online ? '' : ' muted'), 'data-seat': sp.seat }, [
+        sp.name + (sp.seat === r.watching ? ' (' + t('you') + ')' : ''),
+        r.isHost ? h('button', { type: 'button', class: 'tag-x', 'aria-label': t('kick'), onclick: function () { if (confirm(t('kick_confirm', { name: sp.name }))) mutate('kick', { seat: sp.seat }); } }, '×') : null
+      ]));
+    });
+    box.appendChild(row);
+  }
+
+  // ---------- evening history ----------
+  function renderHistory(r) {
+    var list = r.history || [];
+    el('history').hidden = !list.length;
+    if (!list.length) return;
+    el('history-count').textContent = '(' + list.length + ')';
+    // wins per person
+    var wins = {};
+    list.forEach(function (e) { (e.winners || []).forEach(function (n) { wins[n] = (wins[n] || 0) + 1; }); });
+    var tally = el('history-tally');
+    tally.innerHTML = '';
+    Object.keys(wins).sort(function (a, b) { return wins[b] - wins[a]; }).forEach(function (n, i) {
+      tally.appendChild(h('span', { class: 'tally-item' + (i === 0 ? ' top' : '') }, [h('strong', null, n), ' ' + t('wins_n', { n: wins[n] })]));
+    });
+    var ul = el('history-list');
+    ul.innerHTML = '';
+    list.forEach(function (e) {
+      var d = new Date(e.at * 1000);
+      var time = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+      var what = e.draw ? t('hist_draw') : (e.winners.length > 1 ? t('hist_won_many', { names: e.winners.join(' & ') }) : t('hist_won', { names: e.winners.join('') }));
+      var score = (e.ranking || []).slice(0, 4).map(function (r) { return r[1]; }).join(' – ');
+      ul.appendChild(h('li', null, [
+        h('span', { class: 'muted' }, time), ' ', h('strong', null, t('g_' + e.game)), ' · ', what,
+        score ? h('span', { class: 'muted' }, ' (' + score + ')') : null
+      ]));
+    });
+  }
+
+  // ---------- switch game (host) ----------
+  function chooseGame() {
+    var games = (GP.config.games || []);
+    var dlg = h('dialog', { class: 'game-chooser' });
+    var form = h('form', { method: 'dialog' }, [h('h2', null, t('pick_game'))]);
+    var grid = h('div', { class: 'chooser-grid' });
+    games.forEach(function (g) {
+      grid.appendChild(h('button', { class: 'btn' + (g === GAME ? ' primary' : ''), value: g }, t('g_' + g)));
+    });
+    form.appendChild(grid);
+    form.appendChild(h('div', { class: 'row end' }, [h('button', { class: 'btn ghost', value: '' }, t('cancel'))]));
+    dlg.appendChild(form);
+    document.body.appendChild(dlg);
+    dlg.addEventListener('close', function () {
+      var game = dlg.returnValue;
+      dlg.remove();
+      if (!game) return;
+      GP.gameOptions.open(game, { always: true, okLabel: t('switch_go') }, function (options) {
+        mutate('switch_game', { game: game, options: options });
+      });
+    });
+    dlg.showModal();
   }
 
   function updatePresence(presence) {
@@ -145,15 +249,17 @@
     root.appendChild(box);
   }
 
-  function renderJoin(member, r) {
+  function renderJoin(inside, r) {
     var sec = el('join-section');
-    if (member) { sec.hidden = true; return; }
+    if (inside) { sec.hidden = true; return; }
     sec.hidden = false;
     var meta = r.room.meta;
     var blocked = null;
-    if (r.room.status === 'playing' && !meta.joinMidGame) blocked = t('err_game_started') + ' ' + t('spectating');
-    else if (r.players.length >= meta.max) blocked = t('err_room_full') + ' ' + t('spectating');
-    el('room-join-form').hidden = !!blocked;
+    if (r.room.status === 'playing' && !meta.joinMidGame) blocked = t('err_game_started') + ' ' + t('can_watch');
+    else if (r.players.length >= meta.max) blocked = t('err_room_full') + ' ' + t('can_watch');
+    // You can always watch; you can play only when there is room.
+    el('join-play-btn').hidden = !!blocked;
+    el('join-watch-btn').classList.toggle('primary', !!blocked);
     el('join-blocked').hidden = !blocked;
     el('join-blocked').textContent = blocked || '';
     var input = el('room-join-name');
@@ -196,6 +302,7 @@
     }
     if (GAME === 'truthdare') return [t('lvl_' + (o.level || 'soft')), t('order_' + (o.order || 'circle'))].join(' · ');
     if (GAME === 'whoofus' || GAME === 'wouldrather') return t('lvl_' + (o.level || 'soft'));
+    if (GAME === 'mystery') return [o.length === 'mix' ? t('mw_mix') : t('mw_letters', { n: o.length || 5 }), o.first ? t('mw_first_yes') : null].filter(Boolean).join(' · ');
     if (GAME === 'drawguess') return [(o.rounds === 1 ? t('round_one') : t('rounds_n', { n: o.rounds || 2 })), t('secs', { n: o.time || 80 }), o.level === 'party' ? t('words_hard') : t('words_easy')].join(' · ');
     return '';
   }
@@ -211,6 +318,7 @@
     el('start-btn').disabled = !enough;
     el('lobby-hint').textContent = !enough ? (need === 4 && meta.min !== 4 ? t('err_need_four') : t('need_players', { n: meta.min }))
       : (r.isHost ? '' : (r.you !== null ? t('host_will_start') : ''));
+    renderSpectators(el('lobby-spectators'), r);
   }
 
   // ---------- buttons ----------
@@ -229,6 +337,23 @@
     });
   });
 
+  el('join-watch-btn').addEventListener('click', function () {
+    var name = el('room-join-name').value.trim();
+    if (!name) { el('room-join-name').focus(); GP.toast(t('err_name_required'), true); return; }
+    GP.store('gp_name', name);
+    GP.api('watch', { code: CODE, name: name }).then(function (r) {
+      if (!r.ok) { GP.toast(GP.errText(r.error), true); return; }
+      token = r.token;
+      GP.store(tokenKey, token);
+      version = 0;
+      clearTimeout(pollTimer);
+      poll();
+    });
+  });
+  el('sit-btn').addEventListener('click', function () { mutate('sit'); });
+  el('look-btn').addEventListener('click', function () { GP.look.open(); });
+  el('switch-btn-lobby').addEventListener('click', chooseGame);
+  el('switch-btn-game').addEventListener('click', chooseGame);
   el('start-btn').addEventListener('click', function () { mutate('start'); });
   el('add-bot-btn').addEventListener('click', function () { mutate('add_bot'); });
   el('back-lobby-btn').addEventListener('click', function () { mutate('lobby'); });
@@ -276,7 +401,7 @@
   GP.emotes.init({
     send: function (key) { return GP.api('emote', { code: CODE, token: token, emote: key }); },
     name: function (seat) { var p = ctx.player(seat); return p ? p.name : ''; },
-    you: function () { return snap ? snap.you : null; }
+    you: function () { return snap ? (snap.you !== null ? snap.you : snap.watching) : null; }
   });
 
   poll();
