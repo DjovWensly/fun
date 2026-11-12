@@ -195,7 +195,11 @@ if (!is_file("$root/data/prompts.json")) {
 
 
 // 5. Run what the home page runs, and show the real error if it fails (instead of "Server error").
-if ($pdo && !$missing && $cfg) {
+// Only PHP files matter for this test (a missing .js or .css file can't break the PHP side).
+$missingPhp = array_filter($missing, function ($f) {
+    return substr($f, -4) === '.php';
+});
+if ($pdo && !$missingPhp && $cfg) {
     ob_start();
     try {
         require_once "$root/inc/bootstrap.php";
