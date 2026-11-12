@@ -248,6 +248,7 @@ dans **admin.php → Settings**. Le compteur repart à zéro le lendemain.
 
 | Symptôme | Cause probable |
 |---|---|
+| « Server error » | ouvrir `check.php` : il vérifie que tous les fichiers sont présents et lance le code de la page d'accueil pour afficher la vraie erreur. Souvent un envoi incomplet : un fichier manquant ou resté dans son ancienne version. Autre option : ajouter `'debug' => true,` dans `config.php` pour voir l'erreur sur la page (le remettre à `false` ensuite) |
 | Page blanche ou « Internal Server Error » | renommer temporairement `.htaccess` en `htaccess.txt` pour voir si c'est lui ; vérifier `config.php` |
 | « Problème de connexion » dans les jeux | ouvrir `check.php`, il dit quoi corriger |
 | Encadré rouge en haut d'une page | il contient l'explication et un lien vers `check.php` |

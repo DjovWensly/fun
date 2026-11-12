@@ -21,6 +21,9 @@ return [
     // You can also paste a hash made with password_hash() instead of the plain password.
     'admin_password' => '',
 
+    // true shows the real error message on the page instead of "Server error" (turn it off afterwards).
+    'debug' => false,
+
     // Rooms with no activity for this many hours are deleted automatically.
     'room_ttl_hours' => 24,
 ];

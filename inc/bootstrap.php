@@ -120,7 +120,13 @@ set_exception_handler(function (Throwable $e) {
     }
     error_log('[games] ' . $e);
     http_response_code(500);
-    echo 'Server error. Details are in the PHP error log.';
+    // 'debug' => true in config.php shows the real error (useful on hosts without access to the error log).
+    if (!empty(gp_config()['debug'])) {
+        $where = str_replace(GP_ROOT . DIRECTORY_SEPARATOR, '', $e->getFile()) . ':' . $e->getLine();
+        echo '<pre style="white-space:pre-wrap;font:14px/1.4 monospace;padding:16px">' . gp_h(get_class($e) . ': ' . $e->getMessage() . "\n" . $where) . '</pre>';
+        return;
+    }
+    echo 'Server error. Open check.php to find the cause, or set \'debug\' => true in config.php to see it here.';
 });
 
 function gp_now(): string

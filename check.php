@@ -77,7 +77,65 @@ if (!is_file("$root/config.php")) {
     }
 }
 
-// 3. MySQL server, then the database, then the tables
+// 3. Files: a partial upload (one file missing or still in an old version) is the most common problem.
+$required = [
+    'admin.php',
+    'api.php',
+    'index.php',
+    'local.php',
+    'room.php',
+    'assets/css/style.css',
+    'assets/js/common.js',
+    'assets/js/emotes.js',
+    'assets/js/home.js',
+    'assets/js/local-truthdare.js',
+    'assets/js/look.js',
+    'assets/js/options.js',
+    'assets/js/room.js',
+    'assets/js/sound.js',
+    'assets/js/games/dominoes.js',
+    'assets/js/games/drawguess.js',
+    'assets/js/games/mystery.js',
+    'assets/js/games/poll-common.js',
+    'assets/js/games/tictactoe.js',
+    'assets/js/games/truthdare.js',
+    'assets/js/games/whoofus.js',
+    'assets/js/games/wouldrather.js',
+    'data/prompts.json',
+    'data/reactions.json',
+    'inc/admin_tabs.php',
+    'inc/bootstrap.php',
+    'inc/layout.php',
+    'inc/prompts.php',
+    'inc/settings.php',
+    'inc/games/Dominoes.php',
+    'inc/games/DrawGuess.php',
+    'inc/games/GameEngine.php',
+    'inc/games/Mystery.php',
+    'inc/games/PollGame.php',
+    'inc/games/TicTacToe.php',
+    'inc/games/TruthDare.php',
+    'inc/games/WhoOfUs.php',
+    'inc/games/WouldRather.php',
+];
+$missing = [];
+foreach ($required as $f) {
+    if (!is_file("$root/$f")) {
+        $missing[] = $f;
+    }
+}
+if ($missing) {
+    add('fail', count($missing) . ' file(s) missing on the server', 'Upload them again: ' . implode(', ', $missing));
+} else {
+    add('ok', 'All ' . count($required) . ' site files are present');
+}
+foreach (['img/favicon.ico', 'inc/.htaccess', '.htaccess'] as $f) {
+    if (!is_file("$root/$f")) {
+        add('warn', "$f is missing", $f === 'img/favicon.ico' ? 'Only the tab icon is affected.' : 'Upload it: it protects private files (show hidden files in FileZilla to see it).');
+    }
+}
+
+// 4. MySQL server, then the database, then the tables
 if ($cfg && extension_loaded('pdo_mysql')) {
     $opts = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 5];
     try {
@@ -133,6 +191,32 @@ if ($pdo) {
 
 if (!is_file("$root/data/prompts.json")) {
     add('fail', 'data/prompts.json is missing', 'Upload the data folder too.');
+}
+
+
+// 5. Run what the home page runs, and show the real error if it fails (instead of "Server error").
+if ($pdo && !$missing && $cfg) {
+    ob_start();
+    try {
+        require_once "$root/inc/bootstrap.php";
+        require_once "$root/inc/layout.php";
+        restore_exception_handler();
+        $n = 0;
+        foreach (gp_catalog() as $id => $g) {
+            gp_engine($id)->meta();
+            $n++;
+        }
+        gp_public_config();
+        gp_icon_tags();
+        add('ok', 'Home page code runs', "$n games");
+    } catch (Throwable $ex) {
+        $where = str_replace($root . DIRECTORY_SEPARATOR, '', $ex->getFile()) . ':' . $ex->getLine();
+        $hint = $ex->getMessage() === 'unknown_game'
+            ? ' Some files are older than others: upload inc/bootstrap.php, inc/layout.php and the whole inc/games/ folder again.'
+            : '';
+        add('fail', 'The home page code fails (' . get_class($ex) . ')', $ex->getMessage() . ' — in ' . $where . '.' . $hint);
+    }
+    ob_end_clean();
 }
 
 $failed = count(array_filter($results, function ($r) {
