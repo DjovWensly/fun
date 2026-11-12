@@ -17,7 +17,7 @@ During a game, the round button in the bottom corner sends a **reaction**: 8 emo
 (“Bien joué !”, “Oups…”, “On en refait une ?”…). It pops up as a bubble over your name on everyone's screen,
 in the player's own language. Each player can mute other people's reactions.
 
-The interface is in **French, English and Haitian Creole** (FR / EN / KR buttons; a phone set to Kreyòl gets it automatically) (FR/EN switch at the top).
+The interface is in **French, English and Haitian Creole** (FR / EN / KR buttons at the top; a phone set to Kreyòl gets it automatically).
 
 ## At the table
 
