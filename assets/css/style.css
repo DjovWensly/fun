@@ -655,15 +655,6 @@ body > main { flex: 1 0 auto; width: 100%; }
 .chain-cell { position: absolute; display: flex; align-items: center; justify-content: center; }
 .chain-cell .domino.origin { box-shadow: 0 0 0 2px rgba(255, 255, 255, .55), 0 2px 0 rgba(0, 0, 0, .45); }
 .chain-cell .domino.last { box-shadow: 0 0 0 3px var(--gold), 0 2px 0 rgba(0, 0, 0, .45); }
-.end-badge {
-  position: absolute; border-radius: 50%; border: 2px solid var(--ink); background: var(--gold); color: var(--ink);
-  font-family: var(--display); font-weight: 900; line-height: 1; padding: 0; display: flex; align-items: center;
-  justify-content: center; box-shadow: 0 2px 0 rgba(0, 0, 0, .45); z-index: 2;
-}
-.end-badge:disabled { cursor: default; opacity: .95; }
-.end-badge.choose { cursor: pointer; animation: badge-pulse 1s ease-in-out infinite; background: #fff1c9; }
-@keyframes badge-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 0 6px rgba(227, 162, 26, .45); } }
-@media (prefers-reduced-motion: reduce) { .end-badge.choose { animation: none; } }
 
 /* ---------- spectators, switch game, evening history ---------- */
 .spectator-bar {

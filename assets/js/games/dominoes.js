@@ -184,9 +184,7 @@
         dir = -dir;
       }
     });
-    // where the next tile would start: that's where the end marker goes
-    var slot = mode === 'row' ? { x: x + dir * 0.5, y: axis } : { x: colX + 0.5, y: colY + vdir * 0.5 };
-    return { rects: rects, slot: slot };
+    return { rects: rects };
   }
 
   function layoutChain(chain, origin, B) {
@@ -202,8 +200,7 @@
     rects = rects.concat(R.rects, L.rects);
     var reach = 1;
     rects.forEach(function (r) { reach = Math.max(reach, Math.abs(r.y), Math.abs(r.y + r.h)); });
-    [R.slot, L.slot].forEach(function (sl) { reach = Math.max(reach, Math.abs(sl.y) + 0.6); });
-    return { rects: rects, slots: { L: L.slot, R: R.slot }, reach: reach };
+    return { rects: rects, reach: reach };
   }
 
   function drawBoard(g) {
@@ -216,7 +213,6 @@
     els.info.appendChild(h('span', null, info.join('')));
     els.info.appendChild(h('span', null, g.mode === 'fives' && g.chain.length ? t('ends_count', { n: g.ends }) : ''));
     felt.appendChild(els.info);
-    els.badges = {};
 
     if (!g.chain.length) {
       if (g.phase === 'playing') felt.appendChild(h('p', { class: 'felt-empty' }, t('turn_of', { name: ctx.name(g.turn) })));
@@ -245,29 +241,12 @@
       cell.appendChild(tile(r.a, r.b, r.o, (r.i === lastIdx ? 'last' : '') + (r.i === origin ? ' origin' : ''), s));
       board.appendChild(cell);
     });
-
-    // End markers: the number to match, where the next tile would go.
-    if (g.phase === 'playing') {
-      var ends = { L: g.chain[0][0], R: g.chain[g.chain.length - 1][1] };
-      var size = Math.max(26, Math.round(u * 0.95));
-      ['L', 'R'].forEach(function (side) {
-        var sl = plan.slots[side];
-        var badge = h('button', {
-          type: 'button', class: 'end-badge end-' + side, 'aria-label': (side === 'L' ? t('left') : t('right')) + ' ' + ends[side],
-          style: 'left:' + (cx + sl.x * u - size / 2) + 'px;top:' + (cy + sl.y * u - size / 2) + 'px;width:' + size + 'px;height:' + size + 'px;font-size:' + Math.round(size * 0.55) + 'px'
-        }, String(ends[side]));
-        badge.disabled = true;
-        els.badges[side] = badge;
-        board.appendChild(badge);
-      });
-    }
   }
 
   // ---------- moves ----------
   function pick(i, sides) {
     var tl = state.hand[i];
     var ends = state.chain.length ? [state.chain[0][0], state.chain[state.chain.length - 1][1]] : null;
-    clearBadgeChoice();
     // Ask only when both sides are possible and it actually makes a difference.
     if (sides.length > 1 && ends && ends[0] !== ends[1]) {
       var play = function (side) { send({ type: 'play', tile: tl, side: side }); };
@@ -275,28 +254,11 @@
       els.choose.appendChild(h('span', null, t('where_play')));
       els.choose.appendChild(h('button', { class: 'btn primary', onclick: function () { play('L'); } }, t('left') + ' (' + ends[0] + ')'));
       els.choose.appendChild(h('button', { class: 'btn primary', onclick: function () { play('R'); } }, t('right') + ' (' + ends[1] + ')'));
-      els.choose.appendChild(h('button', { class: 'btn ghost', onclick: function () { els.choose.hidden = true; clearBadgeChoice(); } }, t('cancel')));
+      els.choose.appendChild(h('button', { class: 'btn ghost', onclick: function () { els.choose.hidden = true; } }, t('cancel')));
       els.choose.hidden = false;
-      // The two markers on the table can be tapped as well.
-      ['L', 'R'].forEach(function (side) {
-        var b = els.badges && els.badges[side];
-        if (!b) return;
-        b.disabled = false;
-        b.classList.add('choose');
-        b.onclick = function () { play(side); };
-      });
       return;
     }
     send({ type: 'play', tile: tl, side: sides[sides.length - 1] });
-  }
-
-  function clearBadgeChoice() {
-    if (!els.badges) return;
-    ['L', 'R'].forEach(function (side) {
-      var b = els.badges[side];
-      if (!b) return;
-      b.disabled = true; b.classList.remove('choose'); b.onclick = null;
-    });
   }
 
   function send(move) {
