@@ -3,7 +3,8 @@
   'use strict';
   var h = GP.h, t = GP.t;
 
-  function prefix(g) { return g.order.length === 2 ? t('who_two') : t('who_group'); }
+  // The start of the question follows the language of the cards, so it matches the rest of the sentence.
+  function prefix(g) { var l = (g.opts && g.opts.lang) || GP.lang(); return GP.tIn(l, g.order.length === 2 ? 'who_two' : 'who_group'); }
   function name(ctx, s) { var p = ctx.player(s); return p ? p.name : '?'; }
 
   GP.games.whoofus = GP.pollGame({

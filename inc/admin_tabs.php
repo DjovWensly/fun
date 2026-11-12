@@ -65,6 +65,7 @@ function gp_admin_tabs_post(string $action): ?array
             return [
                 'fr' => gp_admin_short($_POST[$name . '_fr'] ?? '', 80),
                 'en' => gp_admin_short($_POST[$name . '_en'] ?? '', 80),
+                'ht' => gp_admin_short($_POST[$name . '_ht'] ?? '', 80),
             ];
         };
         $games = [];
@@ -79,6 +80,7 @@ function gp_admin_tabs_post(string $action): ?array
             $url = 'https://' . $url;
         }
         $lang = (string)($_POST['default_lang'] ?? 'auto');
+        $lang = in_array($lang, ['auto', 'fr', 'en', 'ht'], true) ? $lang : 'auto';
         $poll = (int)($_POST['poll_ms'] ?? 2000);
         $ttl = (int)($_POST['room_ttl_hours'] ?? 24);
         gp_settings_save([
@@ -86,7 +88,7 @@ function gp_admin_tabs_post(string $action): ?array
             'hero_title'     => $texts('hero_title'),
             'tagline'        => $texts('tagline'),
             'footer_text'    => $texts('footer_text'),
-            'default_lang'   => in_array($lang, ['auto', 'fr', 'en'], true) ? $lang : 'auto',
+            'default_lang'   => $lang,
             'games'          => $games,
             'home_url'       => mb_substr($url, 0, 200),
             'home_label'     => gp_admin_short($_POST['home_label'] ?? '', 40),
@@ -206,6 +208,7 @@ function gp_admin_settings_page(string $csrf): void
         return '<fieldset class="pair"><legend>' . gp_h($label) . '</legend>'
             . '<label class="field"><span>Français</span><input name="' . $name . '_fr" maxlength="80" placeholder="' . gp_h($phFr) . '" value="' . gp_h($s[$name]['fr'] ?? '') . '"></label>'
             . '<label class="field"><span>English</span><input name="' . $name . '_en" maxlength="80" placeholder="' . gp_h($phEn) . '" value="' . gp_h($s[$name]['en'] ?? '') . '"></label>'
+            . '<label class="field"><span>Kreyòl</span><input name="' . $name . '_ht" maxlength="80" placeholder="(French text if empty)" value="' . gp_h($s[$name]['ht'] ?? '') . '"></label>'
             . '</fieldset>';
     };
     $select = function (string $name, array $options, $value): string {
@@ -238,7 +241,7 @@ function gp_admin_settings_page(string $csrf): void
       <?= $text('tagline', 'Home page sentence', 'Choisis un jeu, envoie le code à tes amis, et c\'est parti.', 'Pick a game, send the code to your friends, and you\'re in.') ?>
       <?= $text('footer_text', 'Footer text (bottom of every page; {year} = current year, {site} = site name)', '© {year} {site} · Des jeux à partager entre amis.', '© {year} {site} · Games to share with friends.') ?>
       <label class="field"><span>Language for new visitors</span>
-        <?= $select('default_lang', ['auto' => 'Same as their phone or browser', 'fr' => 'Français', 'en' => 'English'], $s['default_lang']) ?>
+        <?= $select('default_lang', ['auto' => 'Same as their phone or browser', 'fr' => 'Français', 'en' => 'English', 'ht' => 'Kreyòl ayisyen'], $s['default_lang']) ?>
       </label>
     </section>
 

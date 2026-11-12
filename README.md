@@ -6,7 +6,7 @@ no build step) so it runs on free shared hosting like **InfinityFree**.
 | Game | Players | Modes |
 |---|---|---|
 | **Dominoes / Dominos** (double-six) | 2–4 | Online table or solo against 1–3 bots. Variants: **draw game** (draw from the boneyard when stuck), **block game** (no drawing, you pass), **all fives** (score when the open ends add up to a multiple of 5). Optional **2 vs 2 teams** with 4 players. Win at a number of points or of rounds won |
-| **Truth or Dare / Action ou Vérité** | 2+ | Online table (join any time, custom cards) · One phone, pass it around |
+| **Truth or Dare / Action ou Vérité** | 2+ | Three levels: tame, party, and **very spicy (18+)** for consenting adults (flirty and suggestive, never crude; anyone can skip). Online table (join any time, custom cards) · One phone, pass it around |
 | **Tic-Tac-Toe / Morpion** | 2 | Online or against a bot. Classic **3×3** (three in a row) or a big squared-paper grid of **10×10, 15×15, 19×19 or 25×25** (five in a row), with zoom and scrolling |
 | **Qui de nous deux ? / Which of us?** | 2+ | A question appears (“…cuisine le mieux ?”), everyone secretly picks a player, then the answers are revealed. Two players get a *complicité* score; in a group the most-picked player scores |
 | **Tu préfères… ? / Would you rather…?** | 2+ | Two choices, everyone votes in secret, then you see who picked what and how often the table agrees |
@@ -17,7 +17,7 @@ During a game, the round button in the bottom corner sends a **reaction**: 8 emo
 (“Bien joué !”, “Oups…”, “On en refait une ?”…). It pops up as a bubble over your name on everyone's screen,
 in the player's own language. Each player can mute other people's reactions.
 
-The interface is in **French and English** (FR/EN switch at the top).
+The interface is in **French, English and Haitian Creole** (FR / EN / KR buttons; a phone set to Kreyòl gets it automatically) (FR/EN switch at the top).
 
 ## At the table
 

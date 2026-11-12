@@ -16,7 +16,7 @@ class TruthDare extends GameEngine
     public function options(array $in): array
     {
         $lang = in_array($in['lang'] ?? '', ['fr', 'en'], true) ? $in['lang'] : 'fr';
-        $level = in_array($in['level'] ?? '', ['soft', 'party'], true) ? $in['level'] : 'soft';
+        $level = in_array($in['level'] ?? '', ['soft', 'party', 'hot'], true) ? $in['level'] : 'soft';
         $order = ($in['order'] ?? '') === 'random' ? 'random' : 'circle';
         return ['lang' => $lang, 'level' => $level, 'order' => $order];
     }
@@ -25,7 +25,8 @@ class TruthDare extends GameEngine
     {
         $all = gp_prompts_load();
         $out = ['truth' => [], 'dare' => []];
-        $levels = $level === 'party' ? ['soft', 'party'] : ['soft'];
+        // 'hot' (18+) mixes the bold and the very spicy cards, without the tame ones.
+        $levels = $level === 'hot' ? ['party', 'hot'] : ($level === 'party' ? ['soft', 'party'] : ['soft']);
         foreach (['truth', 'dare'] as $type) {
             foreach ($levels as $lv) {
                 foreach ($all[$lang][$lv][$type] ?? [] as $p) {

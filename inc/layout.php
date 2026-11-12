@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '16';
+const GP_ASSET_VERSION = '17';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -118,6 +118,7 @@ function gp_header(string $titleKey, string $extraTitle = ''): void
     <div class="lang-switch">
       <button type="button" data-lang="fr">FR</button>
       <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="ht" title="Kreyòl ayisyen">KR</button>
     </div>
   </div>
 </header>

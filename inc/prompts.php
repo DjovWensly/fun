@@ -9,7 +9,7 @@ declare(strict_types=1);
  */
 
 const GP_PROMPT_LANGS = ['fr' => 'Français', 'en' => 'English'];
-const GP_PROMPT_LEVELS = ['soft' => 'Tranquille / Chill', 'party' => 'Soirée / Party'];
+const GP_PROMPT_LEVELS = ['soft' => 'Tranquille / Chill', 'party' => 'Soirée / Party', 'hot' => 'Très osé 18+ / Very spicy 18+'];
 const GP_PROMPT_TYPES = [
     'truth' => 'Vérité / Truth',
     'dare'  => 'Action / Dare',
@@ -66,10 +66,11 @@ function gp_prompts_load(): array
             $out[$l][$lv] = array_fill_keys(array_keys(GP_PROMPT_TYPES), []);
         }
     }
-    $typesInDb = [];
+    // Which (level, type) decks have been edited in the admin at least once.
+    $decksInDb = [];
     try {
-        foreach (gp_db()->query('SELECT DISTINCT type FROM gp_prompts') as $t) {
-            $typesInDb[$t['type']] = true;
+        foreach (gp_db()->query('SELECT DISTINCT level, type FROM gp_prompts') as $t) {
+            $decksInDb[$t['level'] . '/' . $t['type']] = true;
         }
     } catch (PDOException $e) {
     }
@@ -78,11 +79,11 @@ function gp_prompts_load(): array
             $out[$r['lang']][$r['level']][$r['type']][] = $r['text'];
         }
     }
-    // Types never edited in the admin (e.g. a game added later) keep their built-in cards.
+    // Decks never edited in the admin (e.g. a game or level added later) keep their built-in cards.
     foreach (array_keys(GP_PROMPT_TYPES) as $type) {
-        if (empty($typesInDb[$type])) {
-            foreach ($out as $l => $levels) {
-                foreach ($levels as $lv => $_) {
+        foreach (array_keys(GP_PROMPT_LEVELS) as $lv) {
+            if (empty($decksInDb[$lv . '/' . $type])) {
+                foreach (array_keys($out) as $l) {
                     $out[$l][$lv][$type] = $defaults[$l][$lv][$type] ?? [];
                 }
             }

@@ -10,7 +10,7 @@
   var prompts = null;
   var game = null; // { turn, phase, card, used: {truth: [], dare: []} }
 
-  el('opt-lang').value = saved.lang || GP.lang();
+  el('opt-lang').value = saved.lang || (GP.lang() === 'en' ? 'en' : 'fr');
   if (saved.level) el('opt-level').value = saved.level;
   if (saved.order) el('opt-order').value = saved.order;
 
@@ -45,7 +45,7 @@
   function pool() {
     var lang = el('opt-lang').value, level = el('opt-level').value;
     var out = { truth: [], dare: [] };
-    var levels = level === 'party' ? ['soft', 'party'] : ['soft'];
+    var levels = level === 'hot' ? ['party', 'hot'] : (level === 'party' ? ['soft', 'party'] : ['soft']);
     ['truth', 'dare'].forEach(function (type) {
       levels.forEach(function (lv) { out[type] = out[type].concat(((prompts[lang] || {})[lv] || {})[type] || []); });
     });

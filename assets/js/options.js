@@ -65,24 +65,24 @@
     }
     if (game === 'whoofus' || game === 'wouldrather') {
       box.appendChild(choices('level', t('opt_level'), [['soft', t('lvl_soft')], ['party', t('lvl_party')]], 'soft'));
-      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang()));
+      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'));
     }
     if (game === 'mystery') {
       box.appendChild(choices('length', t('mw_length'), [['5', t('mw_letters', { n: 5 })], ['6', t('mw_letters', { n: 6 })], ['7', t('mw_letters', { n: 7 })], ['mix', t('mw_mix')]], '5'));
       box.appendChild(choices('first', t('mw_first'), [['1', t('mw_first_yes')], ['0', t('mw_first_no')]], '0'));
       box.appendChild(choices('level', t('opt_level'), [['soft', t('words_easy')], ['party', t('words_hard')]], 'soft'));
-      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang()));
+      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'));
     }
     if (game === 'drawguess') {
       box.appendChild(choices('rounds', t('opt_rounds'), [1, 2, 3, 4].map(function (n) { return [n, n === 1 ? t('round_one') : t('rounds_n', { n: n })]; }), 2));
       box.appendChild(choices('time', t('opt_time'), [60, 80, 100, 120].map(function (n) { return [n, t('secs', { n: n })]; }), 80));
       box.appendChild(choices('level', t('opt_level'), [['soft', t('words_easy')], ['party', t('words_hard')]], 'soft'));
-      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang()));
+      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'));
     }
     if (game === 'truthdare') {
-      box.appendChild(choices('level', t('opt_level'), [['soft', t('lvl_soft')], ['party', t('lvl_party')]], 'soft'));
+      box.appendChild(choices('level', t('opt_level'), [['soft', t('lvl_soft')], ['party', t('lvl_party')], ['hot', t('lvl_hot'), t('lvl_hot_d')]], 'soft'));
       box.appendChild(choices('order', t('opt_order'), [['circle', t('order_circle')], ['random', t('order_random')]], 'circle'));
-      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang()));
+      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'));
     }
   }
 

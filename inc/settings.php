@@ -13,11 +13,11 @@ function gp_settings_defaults(): array
 {
     $cfg = gp_config();
     return [
-        'site_title'     => ['fr' => '', 'en' => ''],   // empty = built-in "Soirée Jeux" / "Game Night"
-        'hero_title'     => ['fr' => '', 'en' => ''],
-        'tagline'        => ['fr' => '', 'en' => ''],
-        'footer_text'    => ['fr' => '', 'en' => ''],
-        'default_lang'   => 'auto',                      // auto (from the browser) | fr | en
+        'site_title'     => ['fr' => '', 'en' => '', 'ht' => ''],   // empty = built-in "Soirée Jeux" / "Game Night" / "Sware Jwèt"
+        'hero_title'     => ['fr' => '', 'en' => '', 'ht' => ''],
+        'tagline'        => ['fr' => '', 'en' => '', 'ht' => ''],
+        'footer_text'    => ['fr' => '', 'en' => '', 'ht' => ''],
+        'default_lang'   => 'auto',                      // auto (from the browser) | fr | en | ht
         'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true, 'whoofus' => true, 'wouldrather' => true, 'drawguess' => true, 'mystery' => true],
         'home_url'       => (string)($cfg['home_url'] ?? ''),
         'home_label'     => '',
@@ -120,6 +120,7 @@ function gp_public_config(): array
             // (object) so an empty list is sent as {} and not [] (see common.js t())
             'fr' => (object)array_filter(['site_title' => $s['site_title']['fr'] ?? '', 'hero_title' => $s['hero_title']['fr'] ?? '', 'tagline' => $s['tagline']['fr'] ?? '', 'footer_text' => $s['footer_text']['fr'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
             'en' => (object)array_filter(['site_title' => $s['site_title']['en'] ?? '', 'hero_title' => $s['hero_title']['en'] ?? '', 'tagline' => $s['tagline']['en'] ?? '', 'footer_text' => $s['footer_text']['en'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
+            'ht' => (object)array_filter(['site_title' => $s['site_title']['ht'] ?? '', 'hero_title' => $s['hero_title']['ht'] ?? '', 'tagline' => $s['tagline']['ht'] ?? '', 'footer_text' => $s['footer_text']['ht'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
         ],
         'lang'         => $s['default_lang'],
         'pollMs'       => max(1000, min(6000, (int)$s['poll_ms'])),

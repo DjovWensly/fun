@@ -16,7 +16,7 @@ gp_header('site_title');
     </form>
     <ul class="player-list" id="local-players"></ul>
     <label class="field"><span data-i18n="opt_level"></span>
-      <select id="opt-level"><option value="soft" data-i18n="lvl_soft"></option><option value="party" data-i18n="lvl_party"></option></select>
+      <select id="opt-level"><option value="soft" data-i18n="lvl_soft"></option><option value="party" data-i18n="lvl_party"></option><option value="hot" data-i18n="lvl_hot"></option></select>
     </label>
     <label class="field"><span data-i18n="opt_order"></span>
       <select id="opt-order"><option value="circle" data-i18n="order_circle"></option><option value="random" data-i18n="order_random"></option></select>

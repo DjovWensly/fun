@@ -530,7 +530,7 @@ main > .room-title { margin-bottom: 14px; }
 }
 fieldset.pair { border: 0; padding: 0; margin: 0 0 8px; display: grid; gap: 0 10px; grid-template-columns: 1fr; }
 fieldset.pair legend { font-weight: 700; margin-bottom: 4px; padding: 0; }
-@media (min-width: 640px) { fieldset.pair { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 640px) { fieldset.pair { grid-template-columns: 1fr 1fr 1fr; } }
 
 /* ---------- voting games: Qui de nous deux, Tu préfères ---------- */
 .poll-game { max-width: 640px; margin: 0 auto; }
