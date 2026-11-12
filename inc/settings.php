@@ -116,8 +116,9 @@ function gp_public_config(): array
     };
     return [
         'texts' => [
-            'fr' => array_filter(['site_title' => $s['site_title']['fr'] ?? '', 'hero_title' => $s['hero_title']['fr'] ?? '', 'tagline' => $s['tagline']['fr'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
-            'en' => array_filter(['site_title' => $s['site_title']['en'] ?? '', 'hero_title' => $s['hero_title']['en'] ?? '', 'tagline' => $s['tagline']['en'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
+            // (object) so an empty list is sent as {} and not [] (see common.js t())
+            'fr' => (object)array_filter(['site_title' => $s['site_title']['fr'] ?? '', 'hero_title' => $s['hero_title']['fr'] ?? '', 'tagline' => $s['tagline']['fr'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
+            'en' => (object)array_filter(['site_title' => $s['site_title']['en'] ?? '', 'hero_title' => $s['hero_title']['en'] ?? '', 'tagline' => $s['tagline']['en'] ?? '', 'back_home' => $s['home_label']], $nonEmpty),
         ],
         'lang'         => $s['default_lang'],
         'pollMs'       => max(1000, min(6000, (int)$s['poll_ms'])),

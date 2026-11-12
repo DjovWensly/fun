@@ -514,8 +514,13 @@
     : ((navigator.language || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr');
   var lang = store('gp_lang') || defaultLang;
 
+  /** Text stored under key, only if it is a real string of that object (not e.g. Array.prototype.join). */
+  function own(obj, key) {
+    return obj && Object.prototype.hasOwnProperty.call(obj, key) && typeof obj[key] === 'string' ? obj[key] : '';
+  }
+
   function t(key, vars) {
-    var s = (CUSTOM[lang] && CUSTOM[lang][key]) || (DICT[lang] && DICT[lang][key]) || DICT.fr[key] || key;
+    var s = own(CUSTOM[lang], key) || own(DICT[lang], key) || own(DICT.fr, key) || key;
     if (vars) {
       Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); });
     }
