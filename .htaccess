@@ -5,3 +5,6 @@ Options -Indexes
 <Files "install.sql">
   Require all denied
 </Files>
+
+# Developer scripts are not part of the site.
+RedirectMatch 404 ^/?(.*/)?tools/

@@ -124,10 +124,32 @@ foreach ($required as $f) {
         $missing[] = $f;
     }
 }
+// data/manifest.json holds a fingerprint of every file of this version (made by tools/manifest.php):
+// a file whose content differs was not replaced by the latest upload.
+$outdated = [];
+$manifest = json_decode((string)@file_get_contents("$root/data/manifest.json"), true);
+if (is_array($manifest['files'] ?? null)) {
+    foreach ($manifest['files'] as $f => $hash) {
+        if (!is_file("$root/$f")) {
+            if (!in_array($f, $missing, true)) {
+                $missing[] = $f;
+            }
+        } elseif (sha1(str_replace("\r", '', (string)file_get_contents("$root/$f"))) !== $hash) {
+            $outdated[] = $f;
+        }
+    }
+}
 if ($missing) {
     add('fail', count($missing) . ' file(s) missing on the server', 'Upload them again: ' . implode(', ', $missing));
-} else {
-    add('ok', 'All ' . count($required) . ' site files are present');
+}
+if ($outdated) {
+    add('fail', count($outdated) . ' file(s) are an older version', 'Upload these again (replace the ones on the server): ' . implode(', ', $outdated));
+}
+if (!$missing && !$outdated) {
+    add('ok', $manifest ? 'All site files are present and up to date (version of ' . ($manifest['generated'] ?? '?') . ' UTC)' : 'All ' . count($required) . ' site files are present');
+}
+if (!$manifest) {
+    add('warn', 'data/manifest.json is missing', 'Upload it so this page can also spot files that are still an old version.');
 }
 foreach (['img/favicon.ico', 'inc/.htaccess', '.htaccess'] as $f) {
     if (!is_file("$root/$f")) {

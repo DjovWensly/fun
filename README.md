@@ -193,6 +193,12 @@ inc/settings.php     site settings (gp_settings table) with defaults
 inc/admin_tabs.php   admin tabs Reactions and Settings
 ```
 
+## After changing files
+
+Run `php tools/manifest.php`. It refreshes `data/manifest.json`, the fingerprints `check.php` uses to say
+which files on the server are missing or still an older version after an upload. (`tools/` itself is not
+uploaded.)
+
 ## Adding a new game
 
 1. Create `inc/games/MyGame.php` extending `GameEngine` (`meta`, `init`, `move`, `view`, and optionally

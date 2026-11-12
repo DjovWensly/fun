@@ -55,6 +55,7 @@
   function open(game, solo) {
     var name = needName();
     if (!name) return;
+    if (!GP.gameOptions) { GP.toast(t('err_missing_file', { f: 'assets/js/options.js' }), true); return; }
     GP.gameOptions.open(game, { solo: solo, always: true, okLabel: solo ? t('play') : t('create') }, function (options, bots) {
       send(game, name, options, bots, solo);
     });
