@@ -410,6 +410,94 @@ dialog h2 { font-size: 1.6rem; }
 @media (min-width: 760px) { .td-side { grid-template-columns: 1fr 1fr; align-items: start; } }
 details > summary { cursor: pointer; font-weight: 700; }
 
+/* ---------- truth or dare · remote duo ---------- */
+.btn.duo-btn { background: #7a1f3d; color: #fff; }
+.duo { display: grid; gap: 14px; --heat: #e3a21a; }
+.duo[data-heat="2"] { --heat: #d9572b; }
+.duo[data-heat="3"] { --heat: #b3122e; }
+.duo-top { display: grid; gap: 10px; }
+.duo-heat { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.duo-thermo { display: flex; flex: 1 1 220px; border: 2px solid var(--ink); border-radius: 99px; overflow: hidden; min-width: 200px; }
+.duo-thermo .lvl {
+  flex: 1; text-align: center; font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+  padding: 5px 4px; color: var(--ink-2); background: var(--card); transition: background .4s, color .4s;
+}
+.duo-thermo .lvl + .lvl { border-left: 1.5px solid var(--ink); }
+.duo-thermo .lvl.on { color: #fff; }
+.duo-thermo .l1.on { background: #e3a21a; }
+.duo-thermo .l2.on { background: #d9572b; }
+.duo-thermo .l3.on { background: #b3122e; }
+.duo-heat-label { font-family: var(--display); font-stretch: 75%; font-size: 1.3rem; color: var(--heat); min-width: 4.5em; }
+.duo-heat-btns { gap: 6px; }
+.btn.duo-hot { background: var(--heat); color: #fff; }
+.duo-heat-note { margin: 0; min-height: 1.2em; color: var(--ink-2); }
+.duo-heat-note.hot { color: var(--heat); font-weight: 700; }
+.duo-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.duo-score { display: flex; flex-direction: column; align-items: center; border: 2px solid var(--hair); border-radius: 8px; padding: 6px; }
+.duo-score.turn { border-color: var(--heat); }
+.duo-score strong { font-family: var(--display); font-size: 1.4rem; }
+.duo-main { display: grid; gap: 14px; }
+@media (min-width: 860px) { .duo-main { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; } }
+.duo-card {
+  position: relative; text-align: center; border: 2px solid var(--ink); border-radius: 14px;
+  padding: 30px 18px 18px; min-height: 260px; display: flex; flex-direction: column; justify-content: center; gap: 12px;
+  background: var(--card); box-shadow: 6px 6px 0 var(--ink);
+}
+.duo-card::before { content: ""; position: absolute; inset: 8px; border: 1.5px solid var(--heat); border-radius: 9px; pointer-events: none; opacity: .7; }
+.duo-card > * { position: relative; }
+.duo-card.truth { background: #edf2fb; }
+.duo-card.dare { background: #fbece6; }
+.duo-card.guess { background: #fbeef3; }
+.duo-card .td-corner { color: var(--heat); }
+.duo-who { font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: .9rem; color: var(--ink-2); }
+.duo-label { font-weight: 700; margin: 0; }
+.duo-text { font-family: var(--display); font-stretch: 85%; font-size: clamp(1.25rem, 4.6vw, 1.75rem); font-weight: 700; line-height: 1.22; margin: 0; }
+.duo-lvl { color: var(--heat); text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; }
+.duo-hidden { letter-spacing: .3em; color: var(--ink-2); }
+.duo-mods { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0; }
+.duo-mods span { background: var(--heat); color: #fff; border-radius: 99px; padding: 2px 10px; font-size: .8rem; font-weight: 800; }
+.duo-wait { color: var(--ink-2); font-style: italic; margin: 0; }
+.duo-actions .btn { font-size: 1.05rem; padding: 11px 18px; }
+.btn.duo-wheel-btn { background: var(--gold); color: var(--ink); }
+.btn.duo-pause { font-size: .85rem; }
+.duo-input { display: flex; gap: 8px; justify-content: center; }
+.duo-input input { flex: 1; max-width: 360px; }
+.duo-counter { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.duo-counter textarea { width: 100%; max-width: 420px; }
+.duo-proof { margin: 0 auto; max-width: 420px; padding: 8px 12px; border-left: 4px solid var(--heat); background: rgba(255,255,255,.6); text-align: left; }
+.duo-clock { font-family: var(--display); font-weight: 900; font-size: 1.4rem; }
+.duo-clock.low { color: var(--red); }
+.duo-challenge { display: grid; gap: 8px; margin-top: 16px; }
+.duo-challenge h3 { font-size: 1rem; margin: 0; }
+.duo-safety { margin: 12px 0 0; padding: 8px 12px; border: 2px dashed #b3122e; border-radius: 8px; color: #7a0c1f; }
+.duo-side { display: grid; gap: 14px; }
+.duo-chat-list { list-style: none; margin: 0 0 8px; padding: 0; max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.duo-chat-list li { padding: 5px 9px; border-radius: 10px; max-width: 92%; font-size: .93rem; overflow-wrap: anywhere; }
+.duo-chat-list li.sys { align-self: center; background: none; color: var(--ink-2); font-size: .82rem; font-style: italic; text-align: center; }
+.duo-chat-list li.me { align-self: flex-end; background: #f3dde3; }
+.duo-chat-list li.them { align-self: flex-start; background: #e6ecf6; }
+.duo-chat-list li.proof em { font-style: normal; border-bottom: 2px solid var(--heat); }
+.duo-chat-form input { flex: 1; min-width: 0; }
+.duo-settings { display: grid; gap: 8px; }
+.duo-check { display: flex; gap: 8px; align-items: flex-start; font-size: .93rem; }
+.duo-check input { width: auto; margin-top: 4px; }
+/* the wheel */
+.duo-wheel { --r: min(130px, 35vw); position: relative; width: calc(var(--r) * 2); aspect-ratio: 1; margin: 0 auto; }
+.duo-wheel-disc {
+  position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--ink);
+  transition: transform 2.2s cubic-bezier(.17, .67, .2, 1);
+}
+.duo-wheel-lbl {
+  position: absolute; left: 50%; top: 50%; width: 76px; margin: -9px 0 0 -38px; text-align: center;
+  color: #fff; font-weight: 900; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; transform-origin: 50% 50%;
+}
+.duo-wheel-pin {
+  position: absolute; z-index: 2; top: -8px; left: 50%; margin-left: -11px; width: 0; height: 0;
+  border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 20px solid var(--ink);
+}
+.duo-wheel-res { font-family: var(--display); font-weight: 900; font-size: 1.6rem; min-height: 1.3em; margin: 0; color: var(--heat); }
+@media (prefers-reduced-motion: reduce) { .duo-wheel-disc { transition-duration: .3s; } }
+
 /* ---------- admin ---------- */
 .flash { padding: 10px 14px; border: 2px solid var(--ink); border-radius: 6px; margin: 0 0 12px; background: #dcefdc; }
 .flash.error { background: #f6d5cc; }

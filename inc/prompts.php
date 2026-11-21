@@ -17,6 +17,9 @@ const GP_PROMPT_TYPES = [
     'wyr'   => 'Tu préfères / Would you rather',
     'word'  => 'Mot à dessiner / Word to draw',
     'mystery' => 'Mot mystère / Mystery word',
+    'rtruth' => 'À distance · Vérité / Remote · Truth',
+    'rdare'  => 'À distance · Action / Remote · Dare',
+    'rguess' => 'À distance · Devine ma réponse / Remote · Guess my answer',
 ];
 
 function gp_prompts_ensure_table(): void

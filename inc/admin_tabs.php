@@ -226,6 +226,7 @@ function gp_admin_settings_page(string $csrf): void
         'wouldrather' => 'Would you rather? / Tu préfères… ?',
         'drawguess'   => 'Draw & guess / Dessine et devine',
         'mystery'     => 'Mystery word / Mot mystère',
+        'duo'         => 'Truth or Dare · remote duo / Action ou Vérité · à distance',
     ];
     ?>
   <form method="post" class="settings-form">

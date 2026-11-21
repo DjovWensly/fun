@@ -296,6 +296,46 @@
         "zèbre",
         "école",
         "étoile"
+      ],
+      "rtruth": [
+        "Quel a été ton tout premier détail physique remarqué chez moi ?",
+        "Quel message de moi as-tu relu plusieurs fois ?",
+        "Qu'est-ce que tu n'as pas osé me dire lors de notre premier échange ?",
+        "Quelle chanson te fait penser à moi, et pourquoi ?",
+        "Décris notre rendez-vous idéal en trois mots, puis explique-les.",
+        "Quelle est la chose la plus mignonne que tu aies faite en pensant à moi ?",
+        "Si tu pouvais te téléporter près de moi pour 1 heure, on ferait quoi ?",
+        "Quel petit défaut chez moi trouves-tu craquant ?",
+        "Qu'est-ce qui te fait sourire bêtement quand tu lis mes messages ?",
+        "À quel moment t'es-tu dit pour la première fois « oh, il/elle me plaît » ?",
+        "Quel surnom aimerais-tu que je te donne ?",
+        "Quelle est ta tenue préférée quand tu veux te sentir beau/belle ?"
+      ],
+      "rdare": [
+        "Envoie une photo de ce que tu vois là, tout de suite, sans rien ranger.",
+        "Envoie un vocal de 15 secondes où tu chantes le refrain d'une chanson d'amour.",
+        "Fais ton plus beau regard de séduction à la caméra pendant 10 secondes.",
+        "Envoie le dernier selfie de ta galerie, sans tricher.",
+        "Écris-moi un compliment en forme de haïku (5-7-5 syllabes).",
+        "Mime la façon dont tu m'accueillerais si je sonnais à ta porte maintenant.",
+        "Envoie trois emojis qui résument ce que tu ressens pour moi, puis explique-les.",
+        "Imite ma voix en me disant bonne nuit.",
+        "Montre-moi l'objet le plus bizarre de ta pièce et raconte son histoire.",
+        "Danse 20 secondes à l'écran sur une musique que je choisis.",
+        "Fais-moi une déclaration dramatique façon télénovela.",
+        "Envoie une photo de ton sourire, seulement ton sourire."
+      ],
+      "rguess": [
+        "Quel est mon plat réconfort quand ça ne va pas ?",
+        "Quelle est ma plus grosse peur un peu ridicule ?",
+        "Où est-ce que je rêve de partir en voyage ?",
+        "Quel est le film que je peux revoir sans fin ?",
+        "Qu'est-ce que je fais en premier en me réveillant ?",
+        "Quelle est ma couleur préférée ?",
+        "Quel super-pouvoir est-ce que je choisirais ?",
+        "Quel est le métier que je voulais faire enfant ?",
+        "Quelle est la boisson que je commande le plus souvent ?",
+        "Quel est mon emoji le plus utilisé ?"
       ]
     },
     "party": {
@@ -440,6 +480,46 @@
         "vaudou",
         "volcan",
         "épices"
+      ],
+      "rtruth": [
+        "Quelle partie de mon corps regardes-tu le plus pendant nos appels ?",
+        "Quel est le rêve le plus chaud que tu aies fait à mon sujet ?",
+        "Qu'est-ce que tu portes vraiment en ce moment ? Décris tout.",
+        "Quel endroit insolite rêverais-tu de m'embrasser ?",
+        "Qu'est-ce qui t'a donné envie de moi la dernière fois ?",
+        "Raconte un fantasme doux que tu n'as jamais dit à voix haute.",
+        "Quel est le message de moi qui t'a le plus troublé(e) ?",
+        "Préfères-tu qu'on t'embrasse lentement ou avec urgence ? Explique.",
+        "Qu'est-ce que tu ferais si on était seuls dans un ascenseur bloqué ?",
+        "Quel parfum ou odeur aimerais-tu sentir sur moi ?",
+        "Quelle est ta zone sensible préférée (cou, oreilles, dos…) ?",
+        "Qu'est-ce que tu aimerais que je te murmure à l'oreille ?"
+      ],
+      "rdare": [
+        "Envoie un vocal où tu murmures ce que tu me ferais en me voyant ce soir.",
+        "Mords-toi la lèvre en me fixant à la caméra pendant 10 secondes.",
+        "Envoie une photo de ton cou ou de ton épaule, joliment éclairée.",
+        "Écris-moi un message coquin de 3 phrases, sans un seul mot vulgaire.",
+        "Change de haut en direct (caméra tournée ou non, à toi de voir).",
+        "Fais glisser lentement ta main le long de ton cou face à la caméra.",
+        "Envoie une photo de ta tenue de nuit, posée sur le lit.",
+        "Décris notre premier baiser idéal en un vocal de 20 secondes, voix basse.",
+        "Fais-moi un clin d'œil, un bisou soufflé et un regard qui en dit long, dans cet ordre.",
+        "Retire un accessoire (montre, bijou, chaussette…) le plus sensuellement possible.",
+        "Envoie un selfie avec ton regard « viens ici ».",
+        "Lis à voix haute, de ta voix la plus sexy, le dernier message que je t'ai envoyé."
+      ],
+      "rguess": [
+        "Quelle est la partie de mon corps que je préfère ?",
+        "Où est-ce que j'aimerais qu'on s'embrasse pour la première (ou prochaine) fois ?",
+        "Quel style de tenue me fait craquer chez quelqu'un ?",
+        "Lent ou passionné : quel baiser je préfère ?",
+        "Quelle musique je mettrais pour une soirée en tête-à-tête ?",
+        "Qu'est-ce qui me séduit en premier chez une personne ?",
+        "Matin ou soir : quand suis-je le plus câlin(e) ?",
+        "Quel est mon compliment préféré à recevoir ?",
+        "Quel serait mon rendez-vous parfait pour une première nuit ensemble ?",
+        "Quelle est ma zone la plus chatouilleuse ?"
       ]
     },
     "hot": {
@@ -514,6 +594,46 @@
         "Embrasse la personne de ton choix dans le cou pendant 5 secondes, si elle est d'accord.",
         "Les yeux bandés, devine en 3 essais qui t'embrasse sur la joue.",
         "Choisis quelqu'un : vous mangez la même fraise (ou le même bonbon) chacun par un bout, si elle est d'accord."
+      ],
+      "rtruth": [
+        "Quel est ton fantasme le plus fou avec moi, en détail ?",
+        "Qu'est-ce que tu me ferais en premier si j'étais dans ton lit ce soir ?",
+        "Quelle est la chose la plus osée que tu aies faite en pensant à moi ?",
+        "Dominer ou te laisser faire : avec moi, tu choisirais quoi ?",
+        "Décris la tenue (ou l'absence de tenue) dans laquelle tu veux me voir.",
+        "Quel endroit de mon corps voudrais-tu découvrir avec ta bouche ?",
+        "Quel est le mot ou la phrase qui te rend fou/folle au lit ?",
+        "Raconte ton meilleur souvenir intime (sans nom), ce qui l'a rendu si bon.",
+        "Qu'est-ce que tu n'as jamais essayé et voudrais essayer avec moi ?",
+        "Où se trouve l'endroit le plus risqué où tu aimerais qu'on le fasse ?",
+        "Jouet, glaçon, bandeau : lequel tu voudrais tester avec moi, et comment ?",
+        "Qu'est-ce que tu fais quand tu penses à moi seul(e) le soir ?"
+      ],
+      "rdare": [
+        "Retire un vêtement face à la caméra, lentement, en musique.",
+        "Envoie un vocal de 20 secondes où tu décris ce que tu me fais, sans t'arrêter.",
+        "Envoie une photo suggestive (sous-vêtements, drap, ombre…) : rien de plus que ce que tu veux.",
+        "Caresse-toi le cou et le torse en me regardant dans les yeux pendant 20 secondes.",
+        "Écris-moi le scénario de notre prochaine nuit en 5 étapes.",
+        "Montre-moi ta lingerie ou ton boxer préféré (porté ou posé, à ton choix).",
+        "Fais-moi un mini strip-tease de 30 secondes, tu t'arrêtes où tu veux.",
+        "Murmure-moi trois choses que tu veux que je te fasse, de plus en plus osées.",
+        "Allonge-toi et décris ce que tu ressens pendant que je te guide à la voix 30 secondes.",
+        "Envoie une photo de tes lèvres juste après les avoir mordues.",
+        "Joue avec un glaçon sur ta peau pendant 20 secondes devant la caméra.",
+        "Choisis une partie de ton corps et fais-la-moi deviner en photo très rapprochée."
+      ],
+      "rguess": [
+        "Quel est mon fantasme numéro 1 ?",
+        "Lumière allumée ou éteinte : qu'est-ce que je préfère ?",
+        "Quelle position je préfère ?",
+        "Quel est l'endroit le plus fou où j'aimerais faire l'amour ?",
+        "Quelle est ma zone la plus sensible ?",
+        "Qu'est-ce qui m'excite le plus dans un message : les mots, une photo ou un vocal ?",
+        "Doux, sauvage ou joueur : quel est mon style au lit ?",
+        "Quel accessoire j'aimerais essayer en premier ?",
+        "Quelle tenue de toi me rendrait fou/folle ?",
+        "Combien de temps je tiendrais sans te toucher si tu étais devant moi ?"
       ]
     }
   },
@@ -802,6 +922,46 @@
         "winter",
         "yellow",
         "zebra"
+      ],
+      "rtruth": [
+        "What was the very first physical detail you noticed about me?",
+        "Which message from me have you read more than once?",
+        "What didn't you dare to tell me the first time we talked?",
+        "Which song makes you think of me, and why?",
+        "Describe our ideal date in three words, then explain them.",
+        "What's the cutest thing you've done while thinking of me?",
+        "If you could teleport next to me for one hour, what would we do?",
+        "Which little flaw of mine do you find adorable?",
+        "What makes you smile like an idiot when you read my messages?",
+        "When did you first think \"oh, I really like them\"?",
+        "What nickname would you like me to call you?",
+        "What's your favourite outfit when you want to feel attractive?"
+      ],
+      "rdare": [
+        "Send a photo of what you're looking at right now, without tidying anything.",
+        "Send a 15-second voice note singing the chorus of a love song.",
+        "Give the camera your best seductive look for 10 seconds.",
+        "Send the last selfie in your gallery, no cheating.",
+        "Write me a compliment as a haiku (5-7-5 syllables).",
+        "Act out how you'd greet me if I rang your doorbell right now.",
+        "Send three emojis that sum up how you feel about me, then explain them.",
+        "Imitate my voice saying good night to you.",
+        "Show me the weirdest object in your room and tell me its story.",
+        "Dance for 20 seconds on camera to a song I pick.",
+        "Make me a dramatic soap-opera declaration of love.",
+        "Send a photo of your smile, just your smile."
+      ],
+      "rguess": [
+        "What's my comfort food when I'm down?",
+        "What's my most ridiculous fear?",
+        "Where do I dream of travelling?",
+        "Which film can I watch over and over?",
+        "What's the first thing I do when I wake up?",
+        "What's my favourite colour?",
+        "Which superpower would I choose?",
+        "What did I want to be as a kid?",
+        "What drink do I order most often?",
+        "What's my most used emoji?"
       ]
     },
     "party": {
@@ -935,6 +1095,46 @@
         "volcano",
         "wedding",
         "wizard"
+      ],
+      "rtruth": [
+        "Which part of my body do you look at most during our calls?",
+        "What's the hottest dream you've had about me?",
+        "What are you really wearing right now? Describe everything.",
+        "What unusual place would you love to kiss me?",
+        "What made you want me the last time?",
+        "Tell me a soft fantasy you've never said out loud.",
+        "Which message from me got you the most flustered?",
+        "Do you prefer being kissed slowly or urgently? Explain.",
+        "What would you do if we were alone in a stuck elevator?",
+        "What scent would you love to smell on me?",
+        "What's your favourite sensitive spot (neck, ears, back…)?",
+        "What would you like me to whisper in your ear?"
+      ],
+      "rdare": [
+        "Send a voice note whispering what you'd do to me if you saw me tonight.",
+        "Bite your lip while staring into the camera for 10 seconds.",
+        "Send a nicely lit photo of your neck or shoulder.",
+        "Write me a 3-sentence flirty message without a single vulgar word.",
+        "Change your top live (camera turned away or not, your call).",
+        "Slowly run your hand down your neck in front of the camera.",
+        "Send a photo of your sleepwear laid out on the bed.",
+        "Describe our ideal first kiss in a 20-second voice note, in a low voice.",
+        "Give me a wink, a blown kiss and a meaningful look, in that order.",
+        "Take off an accessory (watch, jewellery, sock…) as sensually as possible.",
+        "Send a selfie with your \"come here\" look.",
+        "Read my last message out loud in your sexiest voice."
+      ],
+      "rguess": [
+        "What's my favourite part of my own body?",
+        "Where would I like us to kiss for the first (or next) time?",
+        "What style of outfit makes me weak on someone?",
+        "Slow or passionate: which kiss do I prefer?",
+        "What music would I put on for a night in, just us two?",
+        "What attracts me first in a person?",
+        "Morning or night: when am I the cuddliest?",
+        "What's my favourite compliment to receive?",
+        "What would be my perfect date before a first night together?",
+        "Where am I most ticklish?"
       ]
     },
     "hot": {
@@ -1009,6 +1209,46 @@
         "Kiss the person of your choice on the neck for 5 seconds, if they agree.",
         "Blindfolded, guess in 3 tries who is kissing you on the cheek.",
         "Pick someone: you each eat the same strawberry (or sweet) from either end, if they agree."
+      ],
+      "rtruth": [
+        "What's your wildest fantasy with me, in detail?",
+        "What would you do to me first if I were in your bed tonight?",
+        "What's the boldest thing you've done while thinking of me?",
+        "Take control or let go: with me, which would you choose?",
+        "Describe the outfit (or lack of one) you want to see me in.",
+        "Which part of my body would you like to explore with your mouth?",
+        "What word or phrase drives you wild in bed?",
+        "Tell me your best intimate memory (no names) and what made it so good.",
+        "What have you never tried and would like to try with me?",
+        "What's the riskiest place you'd like us to do it?",
+        "Toy, ice cube, blindfold: which would you test with me, and how?",
+        "What do you do when you think of me alone at night?"
+      ],
+      "rdare": [
+        "Take off a piece of clothing on camera, slowly, with music.",
+        "Send a 20-second voice note describing what you're doing to me, without stopping.",
+        "Send a suggestive photo (underwear, sheets, shadows…): nothing more than you want to share.",
+        "Stroke your neck and chest while looking me in the eyes for 20 seconds.",
+        "Write the script of our next night together in 5 steps.",
+        "Show me your favourite lingerie or boxers (worn or laid out, your choice).",
+        "Give me a 30-second mini striptease, stop wherever you like.",
+        "Whisper three things you want me to do to you, each bolder than the last.",
+        "Lie down and describe what you feel while I guide you with my voice for 30 seconds.",
+        "Send a photo of your lips right after biting them.",
+        "Play with an ice cube on your skin for 20 seconds on camera.",
+        "Pick a part of your body and make me guess it from a very close-up photo."
+      ],
+      "rguess": [
+        "What's my number one fantasy?",
+        "Lights on or off: which do I prefer?",
+        "What's my favourite position?",
+        "What's the craziest place I'd like to make love?",
+        "What's my most sensitive spot?",
+        "What turns me on most in a message: words, a photo or a voice note?",
+        "Gentle, wild or playful: what's my style in bed?",
+        "Which toy or accessory would I like to try first?",
+        "Which outfit on you would drive me crazy?",
+        "How long could I last without touching you if you were right in front of me?"
       ]
     }
   }

@@ -79,6 +79,12 @@
       box.appendChild(choices('level', t('opt_level'), [['soft', t('words_easy')], ['party', t('words_hard')]], 'soft'));
       box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'));
     }
+    if (game === 'duo') {
+      box.appendChild(h('p', { class: 'muted small' }, t('duo_opts_intro')));
+      box.appendChild(choices('timer', t('duo_opt_timer'), [['0', t('duo_timer_off')], ['120', t('duo_timer_n', { n: 2 })], ['300', t('duo_timer_n', { n: 5 })]], '0'));
+      box.appendChild(choices('jokers', t('duo_opt_jokers'), [2, 3, 5].map(function (n) { return [n, String(n)]; }), 3));
+      box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'));
+    }
     if (game === 'truthdare') {
       box.appendChild(choices('level', t('opt_level'), [['soft', t('lvl_soft')], ['party', t('lvl_party')], ['hot', t('lvl_hot'), t('lvl_hot_d')]], 'soft'));
       box.appendChild(choices('order', t('opt_order'), [['circle', t('order_circle')], ['random', t('order_random')]], 'circle'));
@@ -103,6 +109,9 @@
     }
     if (game === 'truthdare') {
       o.level = val('level'); o.order = val('order'); o.lang = val('lang');
+    }
+    if (game === 'duo') {
+      o.timer = parseInt(val('timer') || '0', 10); o.jokers = parseInt(val('jokers') || '3', 10); o.lang = val('lang');
     }
     if (game === 'whoofus' || game === 'wouldrather') {
       o.level = val('level'); o.lang = val('lang');

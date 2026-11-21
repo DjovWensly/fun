@@ -18,7 +18,7 @@ function gp_settings_defaults(): array
         'tagline'        => ['fr' => '', 'en' => '', 'ht' => ''],
         'footer_text'    => ['fr' => '', 'en' => '', 'ht' => ''],
         'default_lang'   => 'auto',                      // auto (from the browser) | fr | en | ht
-        'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true, 'whoofus' => true, 'wouldrather' => true, 'drawguess' => true, 'mystery' => true],
+        'games'          => ['dominoes' => true, 'truthdare' => true, 'tictactoe' => true, 'whoofus' => true, 'wouldrather' => true, 'drawguess' => true, 'mystery' => true, 'duo' => true],
         'home_url'       => (string)($cfg['home_url'] ?? ''),
         'home_label'     => '',
         'poll_ms'        => 2000,

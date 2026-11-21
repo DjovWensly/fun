@@ -33,7 +33,7 @@ gp_header('site_title');
 
   <h2 class="section-title" data-i18n="choose_game"></h2>
   <section class="games">
-    <?php foreach (gp_catalog() as $id => $g): if (!gp_game_enabled($id)) { continue; } $meta = gp_engine($id)->meta(); ?>
+    <?php foreach (gp_catalog() as $id => $g): if ($id === 'duo' || !gp_game_enabled($id)) { continue; } $meta = gp_engine($id)->meta(); ?>
       <article class="game-card">
         <div class="game-art <?= gp_h($g['art_class']) ?>"><?= $g['art'] ?></div>
         <div class="game-body">
@@ -47,6 +47,9 @@ gp_header('site_title');
             <?php endif; ?>
             <?php if ($id === 'truthdare'): ?>
               <a class="btn" href="local.php" data-i18n="one_phone"></a>
+              <?php if (gp_game_enabled('duo')): ?>
+                <button class="btn duo-btn" data-create="duo" data-i18n="duo_btn"></button>
+              <?php endif; ?>
             <?php endif; ?>
           </div>
         </div>

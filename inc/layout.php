@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '17';
+const GP_ASSET_VERSION = '18';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -67,6 +67,10 @@ function gp_catalog(): array
                 . '<rect x="8" y="50" width="22" height="22" rx="3" fill="#fffaf0"/><rect x="34" y="50" width="22" height="22" rx="3" fill="#fffaf0"/><rect x="60" y="50" width="22" height="22" rx="3" fill="#fffaf0"/></g>'
                 . '<text x="19" y="38" fill="#fff">M</text><text x="45" y="38" fill="#14110d">O</text><text x="71" y="38" fill="#14110d">T</text>'
                 . '<text x="45" y="66" fill="#14110d">?</text></svg>',
+        ],
+        'duo' => [
+            'art_class' => 'art-duo',
+            'art' => '',
         ],
         'drawguess' => [
             'art_class' => 'art-paper',
