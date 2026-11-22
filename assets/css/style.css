@@ -498,6 +498,81 @@ details > summary { cursor: pointer; font-weight: 700; }
 .duo-wheel-res { font-family: var(--display); font-weight: 900; font-size: 1.6rem; min-height: 1.3em; margin: 0; color: var(--heat); }
 @media (prefers-reduced-motion: reduce) { .duo-wheel-disc { transition-duration: .3s; } }
 
+/* ---------- c'est plus, c'est moins ---------- */
+.plusmoins { max-width: 640px; margin: 0 auto; display: grid; gap: 12px; }
+.pm-main { display: grid; gap: 14px; }
+.pm-head.mine { color: var(--red); }
+.pm-card {
+  text-align: center; border: 2px solid var(--ink); border-radius: 14px; padding: 20px 16px; background: var(--card);
+  box-shadow: 5px 5px 0 var(--ink); display: grid; gap: 8px; justify-items: center;
+}
+.pm-big { font-family: var(--display); font-stretch: 75%; font-weight: 900; font-size: clamp(2.2rem, 10vw, 3.4rem); line-height: 1; text-transform: uppercase; }
+.pm-big.up { color: var(--green); }
+.pm-big.up::before { content: "▲ "; }
+.pm-big.down { color: var(--red); }
+.pm-big.down::before { content: "▼ "; }
+.pm-big.ok, .pm-big.win { color: var(--blue); }
+.pm-small { font-size: .85rem; color: var(--ink-2); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.pm-win { font-weight: 800; color: var(--green); margin: 0; }
+.pm-heat { display: inline-block; border-radius: 99px; padding: 1px 9px; font-size: .78rem; font-weight: 800; color: #fff; background: #5d8fc9; }
+.pm-heat.h1 { background: #e3a21a; color: var(--ink); }
+.pm-heat.h2 { background: #d9572b; }
+.pm-heat.h3 { background: #b3122e; }
+.pm-heat.big { font-size: 1rem; padding: 3px 14px; }
+.pm-range { width: 100%; max-width: 420px; }
+.pm-bar { position: relative; height: 14px; border: 2px solid var(--ink); border-radius: 99px; background: var(--hair); overflow: hidden; }
+.pm-bar-in { position: absolute; top: 0; bottom: 0; background: var(--gold); transition: left .4s, width .4s; }
+.pm-range-txt { font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.pm-form { display: grid; gap: 6px; justify-items: center; }
+.pm-form[hidden] { display: none; }
+.pm-form-label { font-weight: 700; }
+.pm-form .row { gap: 8px; }
+.pm-input { width: 11em; font-size: 1.4rem; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pm-tries { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.pm-tries li { display: flex; gap: 6px; align-items: center; border: 2px solid var(--ink); border-radius: 6px; padding: 3px 9px; background: var(--card); font-size: .92rem; }
+.pm-tries li.up .pm-arrow { color: var(--green); }
+.pm-tries li.down .pm-arrow { color: var(--red); }
+.pm-tries li.ok { background: #dcefdc; }
+.pm-tries .pm-arrow { font-weight: 800; font-size: .8rem; text-transform: uppercase; }
+.pm-others { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; font-size: .9rem; color: var(--ink-2); }
+.pm-others li.ok { color: var(--green); font-weight: 700; }
+.pm-qtext { font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: clamp(1.2rem, 4.5vw, 1.6rem); line-height: 1.22; margin: 0; }
+.pm-q.heat-party { background: #fbece6; }
+.pm-q.heat-hot { background: #f8dde2; }
+.pm-mine { font-weight: 700; margin: 0; }
+.pm-results { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; width: 100%; }
+.pm-results li {
+  display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center;
+  border: 2px solid var(--hair); border-radius: 8px; padding: 6px 10px; background: var(--card);
+}
+.pm-results.final li { grid-template-columns: 1fr auto; }
+.pm-results li.closest { border-color: var(--green); background: #e8f4ea; }
+.pm-gage { border: 2px dashed var(--red); border-radius: 10px; padding: 10px 14px; background: #fbece6; text-align: center; }
+.pm-gage[hidden] { display: none; }
+.pm-gage p { margin: 4px 0 0; font-weight: 600; }
+.pm-who { text-align: center; display: grid; gap: 4px; }
+/* playing cards */
+.pm-table { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 18px; border-radius: 14px; background: var(--felt); border: 2px solid var(--ink); }
+.pm-pcard {
+  position: relative; width: 110px; height: 156px; border-radius: 10px; background: #fffdf7; border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 rgba(0,0,0,.35); color: var(--ink); font-family: var(--display); font-weight: 900;
+}
+.pm-pcard.red { color: var(--red); }
+.pm-pcard.prev { width: 74px; height: 105px; opacity: .6; transform: rotate(-6deg); }
+.pm-pcard.prev .mid { font-size: 2.2rem; }
+.pm-pcard .corner { position: absolute; top: 6px; left: 8px; font-size: 1.15rem; line-height: 1; }
+.pm-pcard .corner.br { top: auto; left: auto; bottom: 6px; right: 8px; transform: rotate(180deg); }
+.pm-pcard .mid { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 3.4rem; }
+.pm-pcard.flip { animation: pm-flip .45s ease-out; }
+@keyframes pm-flip { from { transform: rotateY(90deg) translateY(-8px); } to { transform: none; } }
+.pm-last { text-align: center; font-weight: 700; margin: 0; }
+.pm-last.ok { color: var(--green); }
+.pm-last.lost { color: var(--red); }
+.pm-streak { display: flex; flex-direction: column; align-items: center; font-family: var(--display); font-weight: 800; font-size: 1.3rem; }
+.btn.pm-up { background: var(--green); color: #fff; font-size: 1.1rem; }
+.btn.pm-down { background: var(--red); color: #fff; font-size: 1.1rem; }
+@media (prefers-reduced-motion: reduce) { .pm-pcard.flip { animation: none; } }
+
 /* ---------- admin ---------- */
 .flash { padding: 10px 14px; border: 2px solid var(--ink); border-radius: 6px; margin: 0 0 12px; background: #dcefdc; }
 .flash.error { background: #f6d5cc; }
@@ -767,6 +842,7 @@ body > main { flex: 1 0 auto; width: 100%; }
 /* ---------- mot mystère ---------- */
 .mystery { max-width: 560px; margin: 0 auto; }
 .game-art.art-mystery { background: #efe3c8; }
+.game-art.art-plusmoins { background: #e3ecd9; }
 .mw-grid { --len: 5; display: flex; flex-direction: column; gap: 6px; align-items: center; margin: 10px 0; }
 .mw-grid.shake { animation: mw-shake .35s; }
 @keyframes mw-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }

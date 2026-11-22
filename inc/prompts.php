@@ -20,6 +20,8 @@ const GP_PROMPT_TYPES = [
     'rtruth' => 'À distance · Vérité / Remote · Truth',
     'rdare'  => 'À distance · Action / Remote · Dare',
     'rguess' => 'À distance · Devine ma réponse / Remote · Guess my answer',
+    'num'    => 'Plus ou moins · Estimation (question || réponse || unité)',
+    'numduo' => 'Plus ou moins · Devine combien, duo (question || unité)',
 ];
 
 function gp_prompts_ensure_table(): void

@@ -79,6 +79,44 @@
       box.appendChild(choices('level', t('opt_level'), [['soft', t('words_easy')], ['party', t('words_hard')]], 'soft'));
       box.appendChild(choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'));
     }
+    if (game === 'plusmoins') {
+      var sub = h('div');
+      var lang = function () { return choices('lang', t('opt_lang'), [['fr', 'Français'], ['en', 'English']], GP.lang() === 'en' ? 'en' : 'fr'); };
+      var gages = function () { return choices('gages', t('pm_opt_gages'), [['off', t('pm_gages_off')], ['soft', t('pm_gages_soft')], ['party', t('pm_gages_party')]], 'soft'); };
+      var renderMode = function (mode) {
+        sub.innerHTML = '';
+        if (mode === 'secret') {
+          sub.appendChild(choices('range', t('pm_opt_range'), [100, 1000, 10000].map(function (n) { return [n, t('pm_range_n', { n: n.toLocaleString(GP.lang() === 'en' ? 'en-US' : 'fr-FR') })]; }), 100));
+          sub.appendChild(choices('limited', t('pm_opt_tries'), [['1', t('pm_tries_limited'), t('pm_tries_limited_d')], ['0', t('pm_tries_free'), t('pm_tries_free_d')]], '1'));
+          sub.appendChild(choices('hint', t('pm_opt_hint'), [['1', t('pm_hint_on')], ['0', t('pm_hint_off')]], '1'));
+        }
+        if (mode === 'estimate') {
+          sub.appendChild(choices('level', t('pm_opt_questions'), [['soft', t('pm_q_soft')], ['party', t('pm_q_party')]], 'soft'));
+          sub.appendChild(choices('rounds', t('pm_opt_rounds'), [5, 10, 15].map(function (n) { return [n, t('pm_n_questions', { n: n })]; }), 10));
+          sub.appendChild(gages());
+          sub.appendChild(lang());
+        }
+        if (mode === 'highlow') {
+          sub.appendChild(choices('target', t('pm_opt_target'), [10, 20, 30].map(function (n) { return [n, t('pm_pts', { n: n })]; }), 20));
+          sub.appendChild(gages());
+          sub.appendChild(lang());
+        }
+        if (mode === 'couple') {
+          sub.appendChild(choices('level', t('opt_level'), [['soft', t('duo_heat_1')], ['party', t('duo_heat_2')], ['hot', t('duo_heat_3') + ' 18+', t('lvl_hot_d')]], 'soft'));
+          sub.appendChild(choices('ctries', t('pm_opt_ctries'), [[5, '5'], [7, '7']], 5));
+          sub.appendChild(lang());
+        }
+      };
+      var modes = [
+        ['secret', t('pm_mode_secret'), t('pm_mode_secret_d')],
+        ['estimate', t('pm_mode_estimate'), t('pm_mode_estimate_d')],
+        ['highlow', t('pm_mode_highlow'), t('pm_mode_highlow_d')]
+      ];
+      if (!solo) modes.push(['couple', t('pm_mode_couple'), t('pm_mode_couple_d')]);
+      box.appendChild(choices('mode', t('opt_mode'), modes, 'secret', renderMode));
+      box.appendChild(sub);
+      renderMode('secret');
+    }
     if (game === 'duo') {
       box.appendChild(h('p', { class: 'muted small' }, t('duo_opts_intro')));
       box.appendChild(choices('timer', t('duo_opt_timer'), [['0', t('duo_timer_off')], ['120', t('duo_timer_n', { n: 2 })], ['300', t('duo_timer_n', { n: 5 })]], '0'));
@@ -109,6 +147,13 @@
     }
     if (game === 'truthdare') {
       o.level = val('level'); o.order = val('order'); o.lang = val('lang');
+    }
+    if (game === 'plusmoins') {
+      o.mode = val('mode') || 'secret';
+      ['range', 'rounds', 'target', 'ctries'].forEach(function (k) { if (val(k) !== null) o[k] = parseInt(val(k), 10); });
+      ['level', 'gages', 'lang'].forEach(function (k) { if (val(k) !== null) o[k] = val(k); });
+      if (val('limited') !== null) o.limited = val('limited') === '1';
+      if (val('hint') !== null) o.hint = val('hint') === '1';
     }
     if (game === 'duo') {
       o.timer = parseInt(val('timer') || '0', 10); o.jokers = parseInt(val('jokers') || '3', 10); o.lang = val('lang');

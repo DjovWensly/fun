@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Bump this when you change CSS/JS so browsers (and InfinityFree's cache) fetch the new files.
-const GP_ASSET_VERSION = '18';
+const GP_ASSET_VERSION = '19';
 
 /** Display info for each game (the rules live in inc/games/*.php). 'art' is a small SVG drawing. */
 function gp_catalog(): array
@@ -67,6 +67,14 @@ function gp_catalog(): array
                 . '<rect x="8" y="50" width="22" height="22" rx="3" fill="#fffaf0"/><rect x="34" y="50" width="22" height="22" rx="3" fill="#fffaf0"/><rect x="60" y="50" width="22" height="22" rx="3" fill="#fffaf0"/></g>'
                 . '<text x="19" y="38" fill="#fff">M</text><text x="45" y="38" fill="#14110d">O</text><text x="71" y="38" fill="#14110d">T</text>'
                 . '<text x="45" y="66" fill="#14110d">?</text></svg>',
+        ],
+        'plusmoins' => [
+            'art_class' => 'art-plusmoins',
+            'art' => '<svg viewBox="0 0 90 90" width="86" height="86" aria-hidden="true" font-family="Archivo, Arial, sans-serif" font-weight="900" text-anchor="middle">'
+                . '<rect x="18" y="16" width="54" height="58" rx="6" fill="#fffaf0" stroke="#14110d" stroke-width="2"/>'
+                . '<text x="45" y="56" font-size="28" fill="#14110d">?</text>'
+                . '<path d="M45 4l9 10h-18z" fill="#2f7d4f" stroke="#14110d" stroke-width="2" stroke-linejoin="round"/>'
+                . '<path d="M45 86l9-10h-18z" fill="#c4381d" stroke="#14110d" stroke-width="2" stroke-linejoin="round"/></svg>',
         ],
         'duo' => [
             'art_class' => 'art-duo',
